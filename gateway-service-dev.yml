@@ -5,6 +5,8 @@ spring:
         webflux:
           routes:
             - id: test-route
-              uri: https://httpbin.org
+              uri: http://httpbin.org
               predicates:
                 - Path=/test/**
+              filters:
+                - RewritePath=/test/(?<segment>.*), /$\{segment}
