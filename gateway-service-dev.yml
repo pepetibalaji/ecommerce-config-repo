@@ -1,8 +1,10 @@
 spring:
   cloud:
     gateway:
-      routes:
-        - id: test-route
-          uri: https://httpbin.org
-          predicates:
-            - Path=/test/**
+      server:
+        webflux:
+          routes:
+            - id: test-route
+              uri: https://httpbin.org
+              predicates:
+                - Path=/test/**
