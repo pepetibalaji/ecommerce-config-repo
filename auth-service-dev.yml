@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/auth_db
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://localhost:5432/ecommerce
+    username: ecommerce_user
+    password: ecommerce_password
 
   jpa:
     hibernate:
