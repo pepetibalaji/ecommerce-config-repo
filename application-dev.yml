@@ -19,3 +19,7 @@ management:
     metrics:
       export:
         enabled: true
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [${spring.application.name}] [traceId=%X{traceId}] - %msg%n"
