@@ -26,3 +26,13 @@ jwt:
   secret: ${JWT_SECRET:7e1f3f8a6c4d9b2e5a7f1c3d8e6b9f2a7c4d1e8f3a6b5c2d9e7f1a3c5b8d2e6}
   access-token-expiration: 900000
   refresh-token-expiration: 604800000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+  endpoint:
+    health:
+      show-details: always
