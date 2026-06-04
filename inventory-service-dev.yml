@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ecommerce?options=-c%20TimeZone=UTC
+    url: jdbc:postgresql://localhost:5433/ecommerce?options=-c%20TimeZone=UTC
     username: ecommerce_user
     password: ecommerce_password
 
