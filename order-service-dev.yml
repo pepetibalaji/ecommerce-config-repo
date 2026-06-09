@@ -21,6 +21,9 @@ spring:
     serialization:
       write-dates-as-timestamps: false
 
+  kafka:
+    bootstrap-servers: localhost:9092
+
 grpc:
   inventory:
     host: localhost
