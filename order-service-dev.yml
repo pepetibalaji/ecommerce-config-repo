@@ -23,11 +23,12 @@ spring:
 
   kafka:
     bootstrap-servers: localhost:9092
-
     producer:
       acks: all
 
 grpc:
+  server:
+    enabled: false
   inventory:
     host: localhost
     port: 9091
