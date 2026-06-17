@@ -30,7 +30,7 @@ spring:
           jwk-set-uri: ${AUTH_JWK_SET_URI:http://localhost:8081/oauth2/jwks}
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:29092
     producer:
       acks: all
 
