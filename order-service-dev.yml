@@ -18,8 +18,16 @@ spring:
     locations: classpath:db/migration
 
   jackson:
+    time-zone: UTC
     serialization:
       write-dates-as-timestamps: false
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8081}
+          jwk-set-uri: ${AUTH_JWK_SET_URI:http://localhost:8081/oauth2/jwks}
 
   kafka:
     bootstrap-servers: localhost:9092
@@ -29,21 +37,11 @@ spring:
 grpc:
   server:
     enabled: false
+
   inventory:
     host: localhost
     port: 9091
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-  endpoint:
-    health:
-      show-details: always
-      probes:
-        enabled: true
-
-logging:
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [${spring.application.name}] [traceId=%X{traceId}] - %msg%n"
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
