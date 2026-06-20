@@ -51,10 +51,6 @@ grpc:
         deadline-ms: 3000
         plaintext: true
 
-  inventory:
-    host: localhost
-    port: 9091
-
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
