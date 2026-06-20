@@ -35,20 +35,6 @@ spring:
       port: 6379
       timeout: 2000ms
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-  endpoint:
-    health:
-      show-details: always
-      probes:
-        enabled: true
-  tracing:
-    sampling:
-      probability: 1.0
-
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -61,7 +47,3 @@ springdoc:
 auth:
   token:
     access-ttl-minutes: 15
-
-logging:
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [${spring.application.name}] [traceId=%X{traceId}] - %msg%n"
