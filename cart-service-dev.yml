@@ -1,11 +1,14 @@
 server:
-  port: 8085
+  port: ${CART_SERVICE_PORT:8085}
 
 spring:
+  application:
+    name: cart-service
+
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
       timeout: 2000ms
 
   security:
@@ -17,8 +20,4 @@ spring:
 
 cart:
   ttl:
-    days: 7
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
+    days: ${CART_TTL_DAYS:7}
