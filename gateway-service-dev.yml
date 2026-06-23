@@ -1,8 +1,298 @@
-message: Welcome to Ecommerce Gateway DEV Environment
-
 server:
   port: ${GATEWAY_PORT:8080}
-  forward-headers-strategy: framework
+  shutdown: graceful
+
+spring:
+  application:
+    name: gateway-service
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: ${REDIS_TIMEOUT:2000ms}
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8081}
+          jwk-set-uri: ${AUTH_JWK_SET_URI:http://localhost:8081/oauth2/jwks}
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          httpclient:
+            connect-timeout: ${GATEWAY_CONNECT_TIMEOUT_MS:3000}
+            response-timeout: ${GATEWAY_RESPONSE_TIMEOUT:10s}
+
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+            - SecureHeaders
+
+          globalcors:
+            cors-configurations:
+              "[/**]":
+                allowed-origin-patterns:
+                  - ${FRONTEND_ORIGIN:http://localhost:3000}
+                  - ${FRONTEND_VITE_ORIGIN:http://localhost:5173}
+                allowed-methods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+                  - OPTIONS
+                allowed-headers:
+                  - Authorization
+                  - Content-Type
+                  - X-Requested-With
+                  - X-Correlation-Id
+                  - traceparent
+                  - tracestate
+                exposed-headers:
+                  - X-Correlation-Id
+                  - traceparent
+                allow-credentials: true
+                max-age: 3600
+
+          routes:
+            # =====================================================
+            # Auth Service - Public Auth APIs
+            # =====================================================
+
+            - id: auth-public-route
+              uri: ${AUTH_SERVICE_URI:http://localhost:8081}
+              predicates:
+                - Path=/api/v1/auth/register,/api/v1/auth/login,/api/v1/auth/refresh
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_AUTH_REPLENISH:10}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_AUTH_BURST:20}
+                    redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # Auth Service - User/Admin APIs
+            # =====================================================
+
+            - id: auth-user-route
+              uri: ${AUTH_SERVICE_URI:http://localhost:8081}
+              predicates:
+                - Path=/api/v1/users/**,/api/v1/admin/users/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userOrIpKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_USER_REPLENISH:30}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_USER_BURST:60}
+                    redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # Product Service
+            # =====================================================
+
+            - id: product-public-route
+              uri: ${PRODUCT_SERVICE_URI:http://localhost:8082}
+              predicates:
+                - Path=/api/v1/products/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_PRODUCT_REPLENISH:60}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_PRODUCT_BURST:120}
+                    redis-rate-limiter.requestedTokens: 1
+
+            - id: product-admin-route
+              uri: ${PRODUCT_SERVICE_URI:http://localhost:8082}
+              predicates:
+                - Path=/api/v1/admin/products/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userOrIpKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_ADMIN_REPLENISH:20}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_ADMIN_BURST:40}
+                    redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # Inventory Service
+            # =====================================================
+
+            - id: inventory-route
+              uri: ${INVENTORY_SERVICE_URI:http://localhost:8084}
+              predicates:
+                - Path=/api/v1/inventory/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userOrIpKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_INVENTORY_REPLENISH:30}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_INVENTORY_BURST:60}
+                    redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # Cart Service
+            # =====================================================
+
+            - id: cart-route
+              uri: ${CART_SERVICE_URI:http://localhost:8085}
+              predicates:
+                - Path=/api/v1/cart/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userOrIpKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_CART_REPLENISH:40}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_CART_BURST:80}
+                    redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # Order Service
+            # =====================================================
+
+            - id: order-route
+              uri: ${ORDER_SERVICE_URI:http://localhost:8086}
+              predicates:
+                - Path=/api/v1/orders/**,/api/v1/admin/orders/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userOrIpKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_ORDER_REPLENISH:30}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_ORDER_BURST:60}
+                    redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # Payment Service - Future
+            # =====================================================
+
+            - id: payment-route
+              uri: ${PAYMENT_SERVICE_URI:http://localhost:8087}
+              predicates:
+                - Path=/api/v1/payments/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userOrIpKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_PAYMENT_REPLENISH:20}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_PAYMENT_BURST:40}
+                    redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # Notification Service - Future
+            # =====================================================
+
+            - id: notification-route
+              uri: ${NOTIFICATION_SERVICE_URI:http://localhost:8088}
+              predicates:
+                - Path=/api/v1/notifications/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userOrIpKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_NOTIFICATION_REPLENISH:30}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_NOTIFICATION_BURST:60}
+                    redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # Address Service - Future
+            # =====================================================
+
+            - id: address-route
+              uri: ${ADDRESS_SERVICE_URI:http://localhost:8089}
+              predicates:
+                - Path=/api/v1/addresses/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userOrIpKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_ADDRESS_REPLENISH:30}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_ADDRESS_BURST:60}
+                    redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # Shipping Service - Future
+            # =====================================================
+
+            - id: shipping-route
+              uri: ${SHIPPING_SERVICE_URI:http://localhost:8090}
+              predicates:
+                - Path=/api/v1/shipments/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userOrIpKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_SHIPPING_REPLENISH:30}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_SHIPPING_BURST:60}
+                    redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # Pricing Service - Future
+            # =====================================================
+
+            - id: pricing-route
+              uri: ${PRICING_SERVICE_URI:http://localhost:8091}
+              predicates:
+                - Path=/api/v1/coupons/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userOrIpKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_PRICING_REPLENISH:30}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_PRICING_BURST:60}
+                    redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # Review Service - Future
+            # =====================================================
+
+            - id: review-route
+              uri: ${REVIEW_SERVICE_URI:http://localhost:8092}
+              predicates:
+                - Path=/api/v1/reviews/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userOrIpKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_REVIEW_REPLENISH:30}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_REVIEW_BURST:60}
+                    redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # Search Service - Future
+            # =====================================================
+
+            - id: search-route
+              uri: ${SEARCH_SERVICE_URI:http://localhost:8093}
+              predicates:
+                - Path=/api/v1/search/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_SEARCH_REPLENISH:80}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_SEARCH_BURST:160}
+                    redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # AI / MCP Service - Future
+            # =====================================================
+
+            - id: ai-mcp-route
+              uri: ${AI_SERVICE_URI:http://localhost:8094}
+              predicates:
+                - Path=/mcp/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userOrIpKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_MCP_REPLENISH:10}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_MCP_BURST:20}
+                    redis-rate-limiter.requestedTokens: 1
 
 management:
   endpoints:
@@ -24,265 +314,23 @@ management:
       endpoint: ${OTEL_TRACES_ENDPOINT:http://localhost:4318/v1/traces}
   metrics:
     tags:
-      application: ${spring.application.name:gateway-service}
+      application: ${spring.application.name}
 
 logging:
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [${spring.application.name}] [traceId=%X{traceId:-}, spanId=%X{spanId:-}] - %msg%n"
   level:
+    root: INFO
     org.springframework.cloud.gateway: INFO
-    reactor.netty.http.client: INFO
+    org.springframework.security: INFO
+    reactor.netty.http.client: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [${spring.application.name}] [traceId=%X{traceId}] [spanId=%X{spanId}] - %msg%n"
 
-spring:
-  application:
-    name: gateway-service
-
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      timeout: ${REDIS_TIMEOUT:2000ms}
-
+gateway:
   security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8081}
-          jwk-set-uri: ${AUTH_JWK_SET_URI:http://localhost:8081/oauth2/jwks}
-
-  cloud:
-    gateway:
-      metrics:
-        enabled: true
-
-      server:
-        webflux:
-          httpclient:
-            connect-timeout: ${GATEWAY_CONNECT_TIMEOUT_MS:3000}
-            response-timeout: ${GATEWAY_RESPONSE_TIMEOUT:10s}
-
-          forwarded:
-            enabled: true
-          x-forwarded:
-            enabled: true
-            for-enabled: true
-            host-enabled: true
-            port-enabled: true
-            proto-enabled: true
-            prefix-enabled: true
-
-          globalcors:
-            add-to-simple-url-handler-mapping: true
-            cors-configurations:
-              "[/**]":
-                allowed-origins: ${GATEWAY_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,http://localhost:4200}
-                allowed-methods:
-                  - GET
-                  - POST
-                  - PUT
-                  - PATCH
-                  - DELETE
-                  - OPTIONS
-                allowed-headers:
-                  - Authorization
-                  - Content-Type
-                  - X-Request-Id
-                  - X-Correlation-Id
-                  - X-Idempotency-Key
-                  - traceparent
-                  - tracestate
-                exposed-headers:
-                  - X-Request-Id
-                  - X-Correlation-Id
-                  - Location
-                allow-credentials: true
-                max-age: 3600
-
-          default-filters:
-            - name: DedupeResponseHeader
-              args:
-                name: Access-Control-Allow-Origin Access-Control-Allow-Credentials
-                strategy: RETAIN_UNIQUE
-            - name: RemoveRequestHeader
-              args:
-                name: Cookie
-            - name: AddRequestHeader
-              args:
-                name: X-Gateway-Name
-                value: ecommerce-gateway
-
-          routes:
-            # Public auth APIs. Rate limited by IP because these requests are usually anonymous.
-            - id: auth-public-route
-              uri: ${AUTH_SERVICE_URI:http://localhost:8081}
-              predicates:
-                - Path=/api/v1/auth/register,/api/v1/auth/login,/api/v1/auth/refresh,/oauth2/**,/.well-known/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@ipKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${AUTH_PUBLIC_RATE_REPLENISH:5}
-                    redis-rate-limiter.burstCapacity: ${AUTH_PUBLIC_RATE_BURST:10}
-                    redis-rate-limiter.requestedTokens: 1
-
-            # Auth user/admin APIs. Rate limited by userId claim, with IP fallback.
-            - id: auth-user-route
-              uri: ${AUTH_SERVICE_URI:http://localhost:8081}
-              predicates:
-                - Path=/api/v1/users/**,/api/v1/admin/users/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@userOrIpKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${AUTH_USER_RATE_REPLENISH:20}
-                    redis-rate-limiter.burstCapacity: ${AUTH_USER_RATE_BURST:40}
-                    redis-rate-limiter.requestedTokens: 1
-
-            - id: product-route
-              uri: ${PRODUCT_SERVICE_URI:http://localhost:8082}
-              predicates:
-                - Path=/api/v1/products/**,/api/v1/admin/products/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@userOrIpKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${PRODUCT_RATE_REPLENISH:50}
-                    redis-rate-limiter.burstCapacity: ${PRODUCT_RATE_BURST:100}
-                    redis-rate-limiter.requestedTokens: 1
-
-            - id: inventory-route
-              uri: ${INVENTORY_SERVICE_URI:http://localhost:8084}
-              predicates:
-                - Path=/api/v1/inventory/**,/api/v1/admin/inventory/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@userOrIpKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${INVENTORY_RATE_REPLENISH:20}
-                    redis-rate-limiter.burstCapacity: ${INVENTORY_RATE_BURST:40}
-                    redis-rate-limiter.requestedTokens: 1
-
-            - id: cart-route
-              uri: ${CART_SERVICE_URI:http://localhost:8085}
-              predicates:
-                - Path=/api/v1/cart/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@userOrIpKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${CART_RATE_REPLENISH:30}
-                    redis-rate-limiter.burstCapacity: ${CART_RATE_BURST:60}
-                    redis-rate-limiter.requestedTokens: 1
-
-            - id: order-route
-              uri: ${ORDER_SERVICE_URI:http://localhost:8086}
-              predicates:
-                - Path=/api/v1/orders/**,/api/v1/admin/orders/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@userOrIpKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${ORDER_RATE_REPLENISH:15}
-                    redis-rate-limiter.burstCapacity: ${ORDER_RATE_BURST:30}
-                    redis-rate-limiter.requestedTokens: 1
-
-            # Planned services. Keep route definitions ready; service URIs can be enabled when services exist.
-            - id: payment-route
-              uri: ${PAYMENT_SERVICE_URI:http://localhost:8087}
-              predicates:
-                - Path=/api/v1/payments/**,/api/v1/admin/payments/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@userOrIpKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${PAYMENT_RATE_REPLENISH:10}
-                    redis-rate-limiter.burstCapacity: ${PAYMENT_RATE_BURST:20}
-                    redis-rate-limiter.requestedTokens: 1
-
-            - id: notification-route
-              uri: ${NOTIFICATION_SERVICE_URI:http://localhost:8088}
-              predicates:
-                - Path=/api/v1/notifications/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@userOrIpKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${NOTIFICATION_RATE_REPLENISH:20}
-                    redis-rate-limiter.burstCapacity: ${NOTIFICATION_RATE_BURST:40}
-                    redis-rate-limiter.requestedTokens: 1
-
-            - id: address-route
-              uri: ${ADDRESS_SERVICE_URI:http://localhost:8089}
-              predicates:
-                - Path=/api/v1/addresses/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@userOrIpKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${ADDRESS_RATE_REPLENISH:20}
-                    redis-rate-limiter.burstCapacity: ${ADDRESS_RATE_BURST:40}
-                    redis-rate-limiter.requestedTokens: 1
-
-            - id: shipping-route
-              uri: ${SHIPPING_SERVICE_URI:http://localhost:8090}
-              predicates:
-                - Path=/api/v1/shipments/**,/api/v1/admin/shipments/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@userOrIpKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${SHIPPING_RATE_REPLENISH:20}
-                    redis-rate-limiter.burstCapacity: ${SHIPPING_RATE_BURST:40}
-                    redis-rate-limiter.requestedTokens: 1
-
-            - id: pricing-route
-              uri: ${PRICING_SERVICE_URI:http://localhost:8091}
-              predicates:
-                - Path=/api/v1/coupons/**,/api/v1/pricing/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@userOrIpKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${PRICING_RATE_REPLENISH:30}
-                    redis-rate-limiter.burstCapacity: ${PRICING_RATE_BURST:60}
-                    redis-rate-limiter.requestedTokens: 1
-
-            - id: review-route
-              uri: ${REVIEW_SERVICE_URI:http://localhost:8092}
-              predicates:
-                - Path=/api/v1/reviews/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@userOrIpKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${REVIEW_RATE_REPLENISH:30}
-                    redis-rate-limiter.burstCapacity: ${REVIEW_RATE_BURST:60}
-                    redis-rate-limiter.requestedTokens: 1
-
-            - id: search-route
-              uri: ${SEARCH_SERVICE_URI:http://localhost:8093}
-              predicates:
-                - Path=/api/v1/search/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@ipKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${SEARCH_RATE_REPLENISH:60}
-                    redis-rate-limiter.burstCapacity: ${SEARCH_RATE_BURST:120}
-                    redis-rate-limiter.requestedTokens: 1
-
-            - id: ai-mcp-route
-              uri: ${AI_SERVICE_URI:http://localhost:8094}
-              predicates:
-                - Path=/mcp/**,/api/v1/ai/**
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@userOrIpKeyResolver}"
-                    redis-rate-limiter.replenishRate: ${AI_RATE_REPLENISH:5}
-                    redis-rate-limiter.burstCapacity: ${AI_RATE_BURST:10}
-                    redis-rate-limiter.requestedTokens: 1
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
+    public-paths:
+      - /api/v1/auth/register
+      - /api/v1/auth/login
+      - /api/v1/auth/refresh
+      - /actuator/health
+      - /actuator/health/liveness
+      - /actuator/health/readiness
