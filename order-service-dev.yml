@@ -1,5 +1,6 @@
 server:
   port: ${ORDER_SERVICE_PORT:8086}
+  shutdown: graceful
 
 spring:
   application:
@@ -26,6 +27,11 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+
   security:
     oauth2:
       resourceserver:
@@ -35,15 +41,27 @@ spring:
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+
+    template:
+      observation-enabled: true
+
     producer:
+      client-id: ${ORDER_KAFKA_PRODUCER_CLIENT_ID:order-service-producer}
       acks: all
-      retries: 3
+      retries: ${ORDER_KAFKA_PRODUCER_RETRIES:3}
+      batch-size: ${ORDER_KAFKA_BATCH_SIZE:16384}
+      buffer-memory: ${ORDER_KAFKA_BUFFER_MEMORY:33554432}
+      compression-type: ${ORDER_KAFKA_COMPRESSION_TYPE:snappy}
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
       properties:
+        spring.json.add.type.headers: false
         enable.idempotence: true
         max.in.flight.requests.per.connection: 5
-        spring.json.add.type.headers: false
+        delivery.timeout.ms: ${ORDER_KAFKA_DELIVERY_TIMEOUT_MS:120000}
+        request.timeout.ms: ${ORDER_KAFKA_REQUEST_TIMEOUT_MS:30000}
+        linger.ms: ${ORDER_KAFKA_LINGER_MS:5}
 
 grpc:
   server:
@@ -55,3 +73,32 @@ grpc:
       port: ${INVENTORY_GRPC_PORT:9091}
       deadline-ms: ${INVENTORY_GRPC_DEADLINE_MS:3000}
       plaintext: ${INVENTORY_GRPC_PLAINTEXT:true}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY:1.0}
+  otlp:
+    tracing:
+      endpoint: ${OTEL_TRACES_ENDPOINT:http://localhost:4318/v1/traces}
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  level:
+    root: INFO
+    com.ecommerce.order: INFO
+    org.springframework.kafka: INFO
+    org.apache.kafka: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [${spring.application.name}] [traceId=%X{traceId}] [spanId=%X{spanId}] - %msg%n"
