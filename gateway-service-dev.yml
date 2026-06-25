@@ -294,6 +294,41 @@ spring:
                     redis-rate-limiter.burstCapacity: ${RATE_LIMIT_MCP_BURST:20}
                     redis-rate-limiter.requestedTokens: 1
 
+            - id: auth-api-docs
+              uri: ${AUTH_SERVICE_URI:http://localhost:8081}
+              predicates:
+                - Path=/auth/v3/api-docs
+              filters:
+                - StripPrefix=1
+
+            - id: product-api-docs
+              uri: ${PRODUCT_SERVICE_URI:http://localhost:8082}
+              predicates:
+                - Path=/product/v3/api-docs
+              filters:
+                - StripPrefix=1
+
+            - id: inventory-api-docs
+              uri: ${INVENTORY_SERVICE_URI:http://localhost:8084}
+              predicates:
+                - Path=/inventory/v3/api-docs
+              filters:
+                - StripPrefix=1
+
+            - id: cart-api-docs
+              uri: ${CART_SERVICE_URI:http://localhost:8085}
+              predicates:
+                - Path=/cart/v3/api-docs
+              filters:
+                - StripPrefix=1
+
+            - id: order-api-docs
+              uri: ${ORDER_SERVICE_URI:http://localhost:8086}
+              predicates:
+                - Path=/order/v3/api-docs
+              filters:
+                - StripPrefix=1
+
 management:
   endpoints:
     web:
@@ -304,8 +339,6 @@ management:
       show-details: always
       probes:
         enabled: true
-    gateway:
-      enabled: true
   tracing:
     sampling:
       probability: ${TRACING_SAMPLING_PROBABILITY:1.0}
@@ -334,3 +367,21 @@ gateway:
       - /actuator/health
       - /actuator/health/liveness
       - /actuator/health/readiness
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    doc-expansion: none
+    urls:
+      - name: auth-service
+        url: /auth/v3/api-docs
+      - name: product-service
+        url: /product/v3/api-docs
+      - name: inventory-service
+        url: /inventory/v3/api-docs
+      - name: cart-service
+        url: /cart/v3/api-docs
+      - name: order-service
+        url: /order/v3/api-docs
