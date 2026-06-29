@@ -6,21 +6,15 @@ spring:
     name: inventory-service
 
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${INVENTORY_DB_NAME:inventory_db}?options=-c%20TimeZone=UTC
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${INVENTORY_DB_NAME:inventory_db}
     username: ${POSTGRES_USER:ecommerce_user}
     password: ${POSTGRES_PASSWORD:ecommerce_password}
-    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
       ddl-auto: validate
     open-in-view: false
     show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        jdbc:
-          time_zone: UTC
 
   flyway:
     enabled: true

@@ -6,21 +6,16 @@ spring:
     name: auth-service
 
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${AUTH_DB_NAME:auth_db}?options=-c%20TimeZone=UTC
+    # Port updated to match your postgres container configuration (5433 mapped to 5432)
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${AUTH_DB_NAME:auth_db}
     username: ${POSTGRES_USER:ecommerce_user}
     password: ${POSTGRES_PASSWORD:ecommerce_password}
-    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
       ddl-auto: validate
     open-in-view: false
     show-sql: true
-    properties:
-      hibernate:
-        format_sql: false
-        jdbc:
-          time_zone: UTC
 
   flyway:
     enabled: true
@@ -31,8 +26,7 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      timeout: 2000ms
 
 auth:
   token:
-    access-ttl-minutes: ${AUTH_ACCESS_TOKEN_TTL_MINUTES:15}
+    access-ttl-minutes: ${AUTH_ACCESS_TOKEN_TTL_MINUTES:30}
