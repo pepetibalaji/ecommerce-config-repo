@@ -47,3 +47,15 @@ springdoc:
     doc-expansion: none
     # FIXES SWAGGER FORGETTING JWT TOKEN ON PAGE REFRESH/SERVICE CHANGE
     persist-authorization: true
+    # AGGREGATES DOWNSTREAM MICROSERVICES INTO THE GATEWAY SWAGGER DROPDOWN
+    urls:
+      - name: Auth Service
+        url: /auth-service/v3/api-docs
+      - name: Product Service
+        url: /product-service/v3/api-docs
+      - name: Inventory Service
+        url: /inventory-service/v3/api-docs
+      - name: Cart Service
+        url: /cart-service/v3/api-docs
+      - name: Order Service
+        url: /order-service/v3/api-docs

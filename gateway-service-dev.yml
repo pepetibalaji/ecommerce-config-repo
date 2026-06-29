@@ -169,7 +169,7 @@ spring:
                     redis-rate-limiter.requestedTokens: 1
 
             # =====================================================
-            # NEW: Cart Service - User Shopping Cart APIs
+            # Cart Service - User Shopping Cart APIs
             # =====================================================
             - id: cart-route
               uri: ${CART_SERVICE_URI:http://localhost:8085}
@@ -184,7 +184,7 @@ spring:
                     redis-rate-limiter.requestedTokens: 1
 
             # =====================================================
-            # NEW: Order Service - Checkout and Booking APIs
+            # Order Service - Checkout and Booking APIs
             # =====================================================
             - id: order-route
               uri: ${ORDER_SERVICE_URI:http://localhost:8086}
@@ -197,3 +197,36 @@ spring:
                     redis-rate-limiter.replenishRate: ${RATE_LIMIT_ORDER_REPLENISH:15}
                     redis-rate-limiter.burstCapacity: ${RATE_LIMIT_ORDER_BURST:30}
                     redis-rate-limiter.requestedTokens: 1
+
+            # =====================================================
+            # AUTOMATED OPENAPI/SWAGGER SPECIFICATION AGGREGATION ROUTES
+            # =====================================================
+            - id: auth-openapi-route
+              uri: ${AUTH_SERVICE_URI:http://localhost:8081}
+              predicates:
+                - Path=/auth-service/v3/api-docs
+              filters:
+                - RewritePath=/auth-service/(?<path>.*), /$\\{path\\}
+
+            - id: product-openapi-route
+              uri: ${PRODUCT_SERVICE_URI:http://localhost:8082}
+              predicates:
+                - Path=/product-service/v3/api-docs
+              filters:
+                - RewritePath=/product-service/(?<path>.*), /$\\{path\\}
+
+            - id: inventory-openapi-route
+              uri: ${INVENTORY_SERVICE_URI:http://localhost:8084}
+              predicates:
+                - Path=/inventory-service/v3/api-docs
+              filters:
+                - RewritePath=/inventory-service/(?<path>.*), /$\\{path\\}
+
+            - id: cart-openapi-route
+              uri: ${CART_SERVICE_URI:http://localhost:8085}
+              predicates:
+                - Path=/cart-service/v3/api-docs
+              filters:
+                - RewritePath=/cart-service/(?<path>.*), /$\\{path\\}
+
+            - id: order-openapi-route
