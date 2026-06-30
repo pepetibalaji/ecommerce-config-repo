@@ -54,11 +54,11 @@ springdoc:
     persist-authorization: true
     urls:
       - name: Auth Service
-        url: /auth-service/v3/api-docs
+        url: /auth/v3/api-docs
       - name: Product Service
-        url: /product-service/v3/api-docs
+        url: /product/v3/api-docs
       - name: Inventory Service
-        url: /inventory-service/v3/api-docs
+        url: /inventory/v3/api-docs
       - name: Cart Service
         url: /cart-service/v3/api-docs
       - name: Order Service
