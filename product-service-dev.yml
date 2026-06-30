@@ -19,10 +19,3 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
-
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8081}
-          jwk-set-uri: ${AUTH_JWK_SET_URI:http://localhost:8081/oauth2/jwks}

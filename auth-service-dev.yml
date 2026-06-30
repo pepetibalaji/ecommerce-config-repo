@@ -6,7 +6,6 @@ spring:
     name: auth-service
 
   datasource:
-    # Port updated to match your postgres container configuration (5433 mapped to 5432)
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${AUTH_DB_NAME:auth_db}
     username: ${POSTGRES_USER:ecommerce_user}
     password: ${POSTGRES_PASSWORD:ecommerce_password}

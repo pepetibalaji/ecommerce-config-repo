@@ -13,7 +13,6 @@ management:
   tracing:
     sampling:
       probability: ${TRACING_SAMPLING_PROBABILITY:1.0}
-    # ENABLES TRACE CONTEXT PASSING DOWNSTREAM
     propagation:
       consume: [w3c]
       produce: [w3c]
@@ -34,6 +33,13 @@ spring:
     serialization:
       write-dates-as-timestamps: false
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8081}
+          jwk-set-uri: ${AUTH_JWK_SET_URI:http://localhost:8081/oauth2/jwks}
+
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
 
@@ -45,9 +51,7 @@ springdoc:
     operations-sorter: method
     tags-sorter: alpha
     doc-expansion: none
-    # FIXES SWAGGER FORGETTING JWT TOKEN ON PAGE REFRESH/SERVICE CHANGE
     persist-authorization: true
-    # AGGREGATES DOWNSTREAM MICROSERVICES INTO THE GATEWAY SWAGGER DROPDOWN
     urls:
       - name: Auth Service
         url: /auth-service/v3/api-docs
