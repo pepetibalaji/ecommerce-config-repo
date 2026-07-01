@@ -60,6 +60,6 @@ springdoc:
       - name: Inventory Service
         url: /inventory/v3/api-docs
       - name: Cart Service
-        url: /cart-service/v3/api-docs
+        url: /cart/v3/api-docs
       - name: Order Service
-        url: /order-service/v3/api-docs
+        url: /order/v3/api-docs
