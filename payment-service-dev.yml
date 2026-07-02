@@ -40,6 +40,29 @@ payment:
     active: ${PAYMENT_PROVIDER_ACTIVE:SANDBOX}
     mode: ${PAYMENT_PROVIDER_MODE:sandbox}
 
+    sandbox:
+      enabled: ${PAYMENT_SANDBOX_ENABLED:true}
+
+    stripe:
+      enabled: ${STRIPE_ENABLED:false}
+      api-key: ${STRIPE_API_KEY:}
+      webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
+      timeout-ms: ${STRIPE_TIMEOUT_MS:5000}
+
+    razorpay:
+      enabled: ${RAZORPAY_ENABLED:false}
+      key-id: ${RAZORPAY_KEY_ID:}
+      key-secret: ${RAZORPAY_KEY_SECRET:}
+      webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}
+      timeout-ms: ${RAZORPAY_TIMEOUT_MS:5000}
+
+  checkout:
+    success-url: ${PAYMENT_CHECKOUT_SUCCESS_URL:http://localhost:3000/checkout/success?orderId={ORDER_ID}}
+    cancel-url: ${PAYMENT_CHECKOUT_CANCEL_URL:http://localhost:3000/checkout/cancel?orderId={ORDER_ID}}
+
+  idempotency:
+    key-prefix: ${PAYMENT_IDEMPOTENCY_KEY_PREFIX:payment}
+
 logging:
   level:
     root: INFO

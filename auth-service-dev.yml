@@ -1,5 +1,8 @@
+message: Auth Service DEV Environment
+
 server:
   port: ${AUTH_SERVICE_PORT:8081}
+  shutdown: graceful
 
 spring:
   application:
@@ -9,12 +12,18 @@ spring:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${AUTH_DB_NAME:auth_db}
     username: ${POSTGRES_USER:ecommerce_user}
     password: ${POSTGRES_PASSWORD:ecommerce_password}
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
       ddl-auto: validate
     open-in-view: false
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
 
   flyway:
     enabled: true
@@ -29,3 +38,11 @@ spring:
 auth:
   token:
     access-ttl-minutes: ${AUTH_ACCESS_TOKEN_TTL_MINUTES:30}
+
+logging:
+  level:
+    root: INFO
+    com.ecommerce.auth: INFO
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE

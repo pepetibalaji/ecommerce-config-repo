@@ -1,5 +1,8 @@
+message: Cart Service DEV Environment
+
 server:
   port: ${CART_SERVICE_PORT:8085}
+  shutdown: graceful
 
 spring:
   application:
@@ -13,3 +16,9 @@ spring:
 cart:
   ttl:
     days: ${CART_TTL_DAYS:7}
+
+logging:
+  level:
+    root: INFO
+    com.ecommerce.cart: INFO
+    org.springframework.data.redis: INFO
