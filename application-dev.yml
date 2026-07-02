@@ -52,14 +52,3 @@ springdoc:
     tags-sorter: alpha
     doc-expansion: none
     persist-authorization: true
-    urls:
-      - name: Auth Service
-        url: /auth/v3/api-docs
-      - name: Product Service
-        url: /product/v3/api-docs
-      - name: Inventory Service
-        url: /inventory/v3/api-docs
-      - name: Cart Service
-        url: /cart/v3/api-docs
-      - name: Order Service
-        url: /order/v3/api-docs

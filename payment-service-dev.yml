@@ -1,0 +1,48 @@
+message: Payment Service DEV Environment
+
+server:
+  port: ${PAYMENT_SERVICE_PORT:8087}
+  shutdown: graceful
+
+spring:
+  application:
+    name: payment-service
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${PAYMENT_DB_NAME:payment_db}
+    username: ${POSTGRES_USER:ecommerce_user}
+    password: ${POSTGRES_PASSWORD:ecommerce_password}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+grpc:
+  server:
+    enabled: false
+    port: ${PAYMENT_GRPC_PORT:9092}
+
+payment:
+  provider:
+    active: ${PAYMENT_PROVIDER_ACTIVE:SANDBOX}
+    mode: ${PAYMENT_PROVIDER_MODE:sandbox}
+
+logging:
+  level:
+    root: INFO
+    com.ecommerce.payment: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE

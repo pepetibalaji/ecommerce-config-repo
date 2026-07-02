@@ -395,3 +395,25 @@ spring:
                 - Path=/order/v3/api-docs
               filters:
                 - StripPrefix=1
+
+            - id: payment-api-docs
+              uri: ${PAYMENT_SERVICE_URI:http://localhost:8087}
+              predicates:
+                - Path=/payment/v3/api-docs
+              filters:
+                - StripPrefix=1
+springdoc:
+  swagger-ui:
+    urls:
+      - name: Auth Service
+        url: /auth/v3/api-docs
+      - name: Product Service
+        url: /product/v3/api-docs
+      - name: Inventory Service
+        url: /inventory/v3/api-docs
+      - name: Cart Service
+        url: /cart/v3/api-docs
+      - name: Order Service
+        url: /order/v3/api-docs
+      - name: Payment Service
+        url: /payment/v3/api-docs
