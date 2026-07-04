@@ -37,7 +37,7 @@ grpc:
 
 payment:
   provider:
-    active: ${PAYMENT_PROVIDER_ACTIVE:SANDBOX}
+    active: ${PAYMENT_PROVIDER_ACTIVE:STRIPE}
     mode: ${PAYMENT_PROVIDER_MODE:sandbox}
 
     sandbox:
