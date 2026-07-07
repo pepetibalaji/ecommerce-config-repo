@@ -29,7 +29,7 @@ management:
 
 logging:
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [${spring.application.name}] [traceId=%X{traceId}, spanId=%X{spanId}] %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [${spring.application.name}] [traceId=%X{traceId}, spanId=%X{spanId}, correlationId=%X{correlationId}] %logger{36} - %msg%n"
 
 spring:
   jackson:
