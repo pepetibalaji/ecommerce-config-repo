@@ -30,18 +30,57 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+
+    listener:
+      observation-enabled: true
+
+    template:
+      observation-enabled: true
+
+    consumer:
+      group-id: ${PAYMENT_KAFKA_CONSUMER_GROUP_ID:payment-service}
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+      properties:
+        spring.json.trusted.packages: com.ecommerce.common.events.*
+        spring.json.value.default.type: com.ecommerce.common.events.order.OrderCreatedEvent
+        spring.json.use.type.headers: false
+
+    producer:
+      client-id: ${PAYMENT_KAFKA_PRODUCER_CLIENT_ID:payment-service-producer}
+      acks: all
+      retries: ${PAYMENT_KAFKA_PRODUCER_RETRIES:3}
+      batch-size: ${PAYMENT_KAFKA_BATCH_SIZE:16384}
+      buffer-memory: ${PAYMENT_KAFKA_BUFFER_MEMORY:33554432}
+      compression-type: ${PAYMENT_KAFKA_COMPRESSION_TYPE:snappy}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+      properties:
+        spring.json.add.type.headers: false
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        delivery.timeout.ms: ${PAYMENT_KAFKA_DELIVERY_TIMEOUT_MS:120000}
+        request.timeout.ms: ${PAYMENT_KAFKA_REQUEST_TIMEOUT_MS:30000}
+        linger.ms: ${PAYMENT_KAFKA_LINGER_MS:5}
+
 grpc:
   server:
-    enabled: false
+    enabled: true
     port: ${PAYMENT_GRPC_PORT:9092}
 
 payment:
   provider:
     active: ${PAYMENT_PROVIDER_ACTIVE:STRIPE}
-    mode: ${PAYMENT_PROVIDER_MODE:sandbox}
+    mode: ${PAYMENT_PROVIDER_MODE:test}
+    refund-timeout-ms: ${PAYMENT_PROVIDER_REFUND_TIMEOUT_MS:5000}
 
     sandbox:
-      enabled: ${PAYMENT_SANDBOX_ENABLED:false}
+      enabled: ${PAYMENT_SANDBOX_ENABLED:true}
 
     stripe:
       enabled: ${STRIPE_ENABLED:true}
@@ -57,8 +96,8 @@ payment:
       timeout-ms: ${RAZORPAY_TIMEOUT_MS:5000}
 
   checkout:
-    success-url: "${PAYMENT_CHECKOUT_SUCCESS_URL:http://localhost:8087/public/payments/success?orderId={ORDER_ID}}"
-    cancel-url: "${PAYMENT_CHECKOUT_CANCEL_URL:http://localhost:8087/public/payments/cancel?orderId={ORDER_ID}}"
+    success-url: "${PAYMENT_CHECKOUT_SUCCESS_URL:http://localhost:8087/public/payments/success?orderId={ORDER_ID}&paymentId={PAYMENT_ID}}"
+    cancel-url: "${PAYMENT_CHECKOUT_CANCEL_URL:http://localhost:8087/public/payments/cancel?orderId={ORDER_ID}&paymentId={PAYMENT_ID}}"
 
   idempotency:
     key-prefix: ${PAYMENT_IDEMPOTENCY_KEY_PREFIX:payment}
@@ -67,5 +106,7 @@ logging:
   level:
     root: INFO
     com.ecommerce.payment: INFO
+    org.springframework.kafka: INFO
+    org.apache.kafka: WARN
     org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
