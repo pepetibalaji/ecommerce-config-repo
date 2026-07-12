@@ -62,7 +62,7 @@ grpc:
     inventory:
       host: ${INVENTORY_GRPC_HOST:localhost}
       port: ${INVENTORY_GRPC_PORT:9091}
-      deadline-ms: ${INVENTORY_GRPC_DEADLINE_MS:3000}
+      deadline-ms: ${INVENTORY_GRPC_DEADLINE_MS:8000}
       plaintext: ${INVENTORY_GRPC_PLAINTEXT:true}
 
 logging:
