@@ -9,9 +9,9 @@ spring:
     name: auth-service
 
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${AUTH_DB_NAME:auth_db}
-    username: ${POSTGRES_USER:ecommerce_user}
-    password: ${POSTGRES_PASSWORD:ecommerce_password}
+    url: "{cipher}79313d7e06aecd98f792344bbaaf169a9bb9d70853b746a2ddc996f72df37418476db2779f1f47ad74615c340bc02a05e56ab7554cb54cce27e3e9d3fc50662a29e3b1ddc62681731b0dfae47cd44c627f047961be765fd9cf75ddd74fcceecd57df8133c4e8cbffa31850414b4a22621d0e4daf7ae1b1c73e05f43b4e0d1df82214da787308e51a069714ea83650e55"
+    username: "{cipher}1bce5867ddb274959cc9b09c32dd0c6de96aab14a339fe1bd28094c9bde18665"
+    password: "{cipher}9e69d9b1f42ea3f6586530cb854606b0a9ecefb6a54a0e76cbfbe80fd180e2b9be43677d985d416a7bf201acfa37599b"
     driver-class-name: org.postgresql.Driver
 
   jpa:

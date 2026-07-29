@@ -9,9 +9,9 @@ spring:
     name: product-service
 
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${PRODUCT_DB_NAME:product_db}
-    username: ${POSTGRES_USER:ecommerce_user}
-    password: ${POSTGRES_PASSWORD:ecommerce_password}
+    url: "{cipher}c57eef2fc33f1a217c00efae5b21299eff9ef5cb1403f679696bf58e38339cdb41c7aef39c41e2d40e4df3d891df64abd74dc724eaae62a3b6ebe0ccc687c537fb26ac6a6c758cb8d576c52bdaad8a115fd089a1df4e584b43815d334c1c1194dcfae1947f51c1316393f85327b9db645bd0ef5958652ee402b917e016db0bbf2b25d198a4fac466cfeffea0cd936ba72a1f093adf6c913e91b20ac0f86eea8f"
+    username: "{cipher}1bce5867ddb274959cc9b09c32dd0c6de96aab14a339fe1bd28094c9bde18665"
+    password: "{cipher}fa50ac3ebad85417e227831ee7549e92e37ee47cb05823330f4558a0754f8e623283cfb344e54e94e0cd431150482216"
     driver-class-name: org.postgresql.Driver
 
   jpa:

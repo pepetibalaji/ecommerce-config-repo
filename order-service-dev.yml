@@ -9,9 +9,9 @@ spring:
     name: order-service
 
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${ORDER_DB_NAME:order_db}
-    username: ${POSTGRES_USER:ecommerce_user}
-    password: ${POSTGRES_PASSWORD:ecommerce_password}
+    url: "{cipher}99408cb1cd93b4c0a54d7aa15ca6c576fb72a6abbf27825ae2f44635e6175cac745c54a769af6313444cdc082f1c7b43b9cc7156795bd6b1d63c65d23e9a40de6354f670fa93ea30ad555372889646c6bbb2d065686d8d44fa1c42d5054771e5ff3cc86e884829ce1a4ecbabe488c7cf7a6bcb208c48c2982d79c8953522f641dcc813aebc898424af51e6a53a8e7ed6"
+    username: "{cipher}1bce5867ddb274959cc9b09c32dd0c6de96aab14a339fe1bd28094c9bde18665"
+    password: "{cipher}30a6d4b3c8dc1762530b4f46320908f290bacbd303396d41c7607ff8f07faeee0c1e638c3a8450d6633396b5b833feb4"
     driver-class-name: org.postgresql.Driver
 
   jpa:

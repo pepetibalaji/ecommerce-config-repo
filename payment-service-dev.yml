@@ -9,9 +9,9 @@ spring:
     name: payment-service
 
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${PAYMENT_DB_NAME:payment_db}
-    username: ${POSTGRES_USER:ecommerce_user}
-    password: ${POSTGRES_PASSWORD:ecommerce_password}
+    url: "{cipher}3af657e6c88aaf48f6d470a89cd35a0b83b0666bdd6f6a6a60e9e18cd50e51e6dca79e5bc7b69d99e262bc1e311ee9ee67cf1e9d049623b34d52267b6bc197eb9ae179bace65cd125b038456ada81ee7e8df31ccb290ab90749b666f6e2de5ebd2870b0ddc0e39206baa3cf29c5a74150daa9def155e11d97034d8ba37b2ee4524dfdfc2977145b4dc17cd7233f9dbfc01cbebabfdd3021935dc1d83f67bf455"
+    username: "{cipher}1bce5867ddb274959cc9b09c32dd0c6de96aab14a339fe1bd28094c9bde18665"
+    password: "{cipher}f1dd7c9d483e3f4509b3a43fd4de8ac89e34b1e91f6976709cd9047df2508f52c396467e94319c63dff0368c5a633626"
     driver-class-name: org.postgresql.Driver
 
   jpa:

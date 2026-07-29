@@ -9,9 +9,9 @@ spring:
     name: inventory-service
 
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${INVENTORY_DB_NAME:inventory_db}
-    username: ${POSTGRES_USER:ecommerce_user}
-    password: ${POSTGRES_PASSWORD:ecommerce_password}
+    url: "{cipher}606c228470174d53940b799599f52a087447e70ec81c57f9266a4f2101928bcd83668547108fbb0219ef90e23680c5dbf21ff55f8de0cce588f9d28b9073eb331e078666451d4207e7356c956b977ce60c1815e571abfe39cad16966e2121197ceb66afca493a6c9d3ea2072b1224b3214ad375d5d1335d312e3e50f305208bb5dd255ab40a604b572ce048a8262a6d5207b568a0a991dd975ba85a5481c1e7f"
+    username: "{cipher}1bce5867ddb274959cc9b09c32dd0c6de96aab14a339fe1bd28094c9bde18665"
+    password: "{cipher}7c3d1e83daea6d0a9b1cb0ffff566a53f35cf3979bb3b0c821e4ca80c0bad3e1127c8ecf86b1104b50784c567253bfa0"
     driver-class-name: org.postgresql.Driver
 
   jpa:
