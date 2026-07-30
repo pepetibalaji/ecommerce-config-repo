@@ -10,12 +10,12 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      host: one-bobcat-102440.upstash.io
+      port: 6379
       username: ${REDIS_USERNAME:default}
-      password: ${REDIS_PASSWORD:}
+      password: "{cipher}bab93dd88eb05a542c312ea1096cf187173b1999127c3ad7b6ff795e436a4030a966f90ba140432e1ec1cd4eaf88fed58267dc9ffb5b4d642fdde7d6acc720852058fdd8226ca27f847a395669875522"
       ssl:
-        enabled: ${REDIS_SSL_ENABLED:false}
+        enabled: ${REDIS_SSL_ENABLED:true}
 
 cart:
   ttl:
