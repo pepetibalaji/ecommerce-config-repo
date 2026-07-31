@@ -13,7 +13,7 @@ spring:
       host: one-bobcat-102440.upstash.io
       port: 6379
       username: ${REDIS_USERNAME:default}
-      password: "{cipher}bab93dd88eb05a542c312ea1096cf187173b1999127c3ad7b6ff795e436a4030a966f90ba140432e1ec1cd4eaf88fed58267dc9ffb5b4d642fdde7d6acc720852058fdd8226ca27f847a395669875522"
+      password: "{cipher}7e311192d1ca5f66daf2e47c9aa96e46669807925fe8ce8b4236ff43a2e7ae89799d98e4b7d7e06d0eb67942e31b269935eb3e9889fffe07724a27b87537e8d8e164d709f1240e13c6759f8a6a774e1e"
       ssl:
         enabled: ${REDIS_SSL_ENABLED:true}
 
