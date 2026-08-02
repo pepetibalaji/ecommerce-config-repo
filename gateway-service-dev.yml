@@ -21,6 +21,16 @@ spring:
             - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
 
           routes:
+            # Keep this before product-service: Gateway evaluates routes in declaration order.
+            - id: product-service-bulk-create
+              uri: ${PRODUCT_SERVICE_URI:http://localhost:8082}
+              predicates:
+                - Path=/api/v1/admin/products/bulk
+                - Method=POST
+              metadata:
+                connect-timeout: 1000
+                response-timeout: 30000
+
             - id: auth-service
               uri: ${AUTH_SERVICE_URI:http://localhost:8081}
               predicates:
