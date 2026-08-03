@@ -1,112 +1,70 @@
-message: Payment Service DEV Environment
+message: Payment Service PROD Environment
 
 server:
-  port: ${PAYMENT_SERVICE_PORT:8087}
+  port: ${SERVER_PORT:8087}
   shutdown: graceful
 
 spring:
-  application:
-    name: payment-service
-
+  application.name: payment-service
   datasource:
     url: ${PAYMENT_DB_URL}
     username: ${PAYMENT_DB_USERNAME}
     password: ${PAYMENT_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-
   jpa:
-    hibernate:
-      ddl-auto: validate
+    hibernate.ddl-auto: validate
     open-in-view: false
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        jdbc:
-          time_zone: UTC
-
+    show-sql: false
+    properties.hibernate.jdbc.time_zone: UTC
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
-
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
-
-    listener:
-      observation-enabled: true
-
-    template:
-      observation-enabled: true
-
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    listener.observation-enabled: true
+    template.observation-enabled: true
     consumer:
       group-id: ${PAYMENT_KAFKA_CONSUMER_GROUP_ID:payment-service}
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-
       properties:
         spring.json.trusted.packages: com.ecommerce.common.events.*
         spring.json.value.default.type: com.ecommerce.common.events.order.OrderCreatedEvent
         spring.json.use.type.headers: false
-
     producer:
       client-id: ${PAYMENT_KAFKA_PRODUCER_CLIENT_ID:payment-service-producer}
       acks: all
       retries: ${PAYMENT_KAFKA_PRODUCER_RETRIES:3}
-      batch-size: ${PAYMENT_KAFKA_BATCH_SIZE:16384}
-      buffer-memory: ${PAYMENT_KAFKA_BUFFER_MEMORY:33554432}
-      compression-type: ${PAYMENT_KAFKA_COMPRESSION_TYPE:snappy}
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
       properties:
         spring.json.add.type.headers: false
         enable.idempotence: true
-        max.in.flight.requests.per.connection: 5
-        delivery.timeout.ms: ${PAYMENT_KAFKA_DELIVERY_TIMEOUT_MS:120000}
-        request.timeout.ms: ${PAYMENT_KAFKA_REQUEST_TIMEOUT_MS:30000}
-        linger.ms: ${PAYMENT_KAFKA_LINGER_MS:5}
 
-grpc:
-  server:
-    enabled: true
-    port: ${PAYMENT_GRPC_PORT:9092}
+grpc.server:
+  enabled: true
+  port: ${PAYMENT_GRPC_PORT:9092}
 
 payment:
   provider:
     active: ${PAYMENT_PROVIDER_ACTIVE:STRIPE}
-    mode: ${PAYMENT_PROVIDER_MODE:test}
+    mode: ${PAYMENT_PROVIDER_MODE:live}
     refund-timeout-ms: ${PAYMENT_PROVIDER_REFUND_TIMEOUT_MS:5000}
-
-    sandbox:
-      enabled: ${PAYMENT_SANDBOX_ENABLED:true}
-
+    sandbox.enabled: ${PAYMENT_SANDBOX_ENABLED:false}
     stripe:
       enabled: ${STRIPE_ENABLED:true}
       api-key: ${STRIPE_API_KEY}
       webhook-secret: ${STRIPE_WEBHOOK_SECRET}
       timeout-ms: ${STRIPE_TIMEOUT_MS:5000}
-
     razorpay:
       enabled: ${RAZORPAY_ENABLED:false}
       key-id: ${RAZORPAY_KEY_ID:}
       key-secret: ${RAZORPAY_KEY_SECRET:}
       webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}
       timeout-ms: ${RAZORPAY_TIMEOUT_MS:5000}
-
   checkout:
-    success-url: "${PAYMENT_CHECKOUT_SUCCESS_URL:http://localhost:8087/public/payments/success?orderId={ORDER_ID}&paymentId={PAYMENT_ID}}"
-    cancel-url: "${PAYMENT_CHECKOUT_CANCEL_URL:http://localhost:8087/public/payments/cancel?orderId={ORDER_ID}&paymentId={PAYMENT_ID}}"
-
-  idempotency:
-    key-prefix: ${PAYMENT_IDEMPOTENCY_KEY_PREFIX:payment}
-
-logging:
-  level:
-    root: INFO
-    com.ecommerce.payment: INFO
-    org.springframework.kafka: INFO
-    org.apache.kafka: WARN
-    org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
+    success-url: ${PAYMENT_CHECKOUT_SUCCESS_URL}
+    cancel-url: ${PAYMENT_CHECKOUT_CANCEL_URL}
+  idempotency.key-prefix: ${PAYMENT_IDEMPOTENCY_KEY_PREFIX:payment}

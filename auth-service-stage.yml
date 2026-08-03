@@ -1,39 +1,35 @@
-message: Auth Service DEV Environment
+message: Auth Service STAGE Environment
 
 server:
-  port: ${AUTH_SERVICE_PORT:8081}
+  port: ${SERVER_PORT:8081}
   shutdown: graceful
 
 spring:
   application:
     name: auth-service
-
   datasource:
     url: ${AUTH_DB_URL}
     username: ${AUTH_DB_USERNAME}
     password: ${AUTH_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-
   jpa:
     hibernate:
       ddl-auto: validate
     open-in-view: false
-    show-sql: true
+    show-sql: false
     properties:
-      hibernate:
-        format_sql: true
-        jdbc:
-          time_zone: UTC
-
+      hibernate.jdbc.time_zone: UTC
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
-
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
+      username: ${REDIS_USERNAME:}
+      password: ${REDIS_PASSWORD}
+      ssl.enabled: ${REDIS_SSL_ENABLED:true}
 
 auth:
   token:
@@ -43,6 +39,3 @@ logging:
   level:
     root: INFO
     com.ecommerce.auth: INFO
-    org.springframework.security: INFO
-    org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
