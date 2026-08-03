@@ -1,41 +1,32 @@
-message: Order Service DEV Environment
+message: Order Service STAGE Environment
 
 server:
-  port: ${ORDER_SERVICE_PORT:8086}
+  port: ${SERVER_PORT:8086}
   shutdown: graceful
 
 spring:
   application:
     name: order-service
-
   datasource:
     url: ${ORDER_DB_URL}
     username: ${ORDER_DB_USERNAME}
     password: ${ORDER_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-
   jpa:
     hibernate:
       ddl-auto: validate
     open-in-view: false
-    show-sql: true
+    show-sql: false
     properties:
-      hibernate:
-        format_sql: true
-        jdbc:
-          time_zone: UTC
-
+      hibernate.jdbc.time_zone: UTC
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
-
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
-
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     template:
       observation-enabled: true
-
     producer:
       client-id: ${ORDER_KAFKA_PRODUCER_CLIENT_ID:order-service-producer}
       acks: all
@@ -45,7 +36,6 @@ spring:
       compression-type: ${ORDER_KAFKA_COMPRESSION_TYPE:snappy}
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
       properties:
         spring.json.add.type.headers: false
         enable.idempotence: true
@@ -57,13 +47,15 @@ spring:
 grpc:
   server:
     enabled: false
-
   clients:
     inventory:
-      host: ${INVENTORY_GRPC_HOST:localhost}
+      host: ${INVENTORY_GRPC_HOST}
       port: ${INVENTORY_GRPC_PORT:9091}
       deadline-ms: ${INVENTORY_GRPC_DEADLINE_MS:8000}
-      plaintext: ${INVENTORY_GRPC_PLAINTEXT:true}
+      plaintext: ${INVENTORY_GRPC_PLAINTEXT:false}
+
+order:
+  default-currency: ${ORDER_DEFAULT_CURRENCY:INR}
 
 logging:
   level:
@@ -71,8 +63,3 @@ logging:
     com.ecommerce.order: INFO
     org.springframework.kafka: INFO
     org.apache.kafka: WARN
-    org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
-
-order:
-  default-currency: ${ORDER_DEFAULT_CURRENCY:INR}

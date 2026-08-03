@@ -1,0 +1,44 @@
+message: Welcome to Ecommerce Platform PROD Environment
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY:0.05}
+    propagation:
+      consume: [w3c]
+      produce: [w3c]
+  otlp:
+    tracing:
+      endpoint: ${OTEL_TRACES_ENDPOINT}
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+spring:
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTH_ISSUER_URI}
+          jwk-set-uri: ${AUTH_JWK_SET_URI}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

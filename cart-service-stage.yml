@@ -1,21 +1,19 @@
-message: Cart Service DEV Environment
+message: Cart Service STAGE Environment
 
 server:
-  port: ${CART_SERVICE_PORT:8085}
+  port: ${SERVER_PORT:8085}
   shutdown: graceful
 
 spring:
   application:
     name: cart-service
-
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
       username: ${REDIS_USERNAME:}
-      password: ${REDIS_PASSWORD:}
-      ssl:
-        enabled: ${REDIS_SSL_ENABLED:false}
+      password: ${REDIS_PASSWORD}
+      ssl.enabled: ${REDIS_SSL_ENABLED:true}
 
 cart:
   ttl:
@@ -25,4 +23,3 @@ logging:
   level:
     root: INFO
     com.ecommerce.cart: INFO
-    org.springframework.data.redis: INFO

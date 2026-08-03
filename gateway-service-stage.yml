@@ -1,0 +1,114 @@
+message: Gateway Service STAGE Environment
+
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+
+spring:
+  application:
+    name: gateway-service
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+      username: ${REDIS_USERNAME:}
+      password: ${REDIS_PASSWORD}
+      ssl.enabled: ${REDIS_SSL_ENABLED:true}
+  cloud:
+    gateway:
+      server:
+        webflux:
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+          routes:
+            - id: product-service-bulk-create
+              uri: ${PRODUCT_SERVICE_URI}
+              predicates:
+                - Path=/api/v1/admin/products/bulk
+                - Method=POST
+              metadata:
+                connect-timeout: 1000
+                response-timeout: 30000
+            - id: auth-service
+              uri: ${AUTH_SERVICE_URI}
+              predicates:
+                - Path=/api/v1/auth/**,/api/v1/users/**,/api/v1/admin/users/**
+            - id: product-service
+              uri: ${PRODUCT_SERVICE_URI}
+              predicates:
+                - Path=/api/v1/products/**,/api/v1/admin/products/**
+            - id: inventory-service
+              uri: ${INVENTORY_SERVICE_URI}
+              predicates:
+                - Path=/api/v1/inventory/**,/api/v1/admin/inventory/**
+            - id: cart-service
+              uri: ${CART_SERVICE_URI}
+              predicates:
+                - Path=/api/v1/cart/**
+            - id: order-service
+              uri: ${ORDER_SERVICE_URI}
+              predicates:
+                - Path=/api/v1/orders/**,/api/v1/admin/orders/**
+            - id: payment-service
+              uri: ${PAYMENT_SERVICE_URI}
+              predicates:
+                - Path=/api/v1/payments/**,/api/v1/admin/payments/**
+            - id: auth-api-docs
+              uri: ${AUTH_SERVICE_URI}
+              predicates:
+                - Path=/auth/v3/api-docs
+              filters:
+                - StripPrefix=1
+            - id: product-api-docs
+              uri: ${PRODUCT_SERVICE_URI}
+              predicates:
+                - Path=/product/v3/api-docs
+              filters:
+                - StripPrefix=1
+            - id: inventory-api-docs
+              uri: ${INVENTORY_SERVICE_URI}
+              predicates:
+                - Path=/inventory/v3/api-docs
+              filters:
+                - StripPrefix=1
+            - id: cart-api-docs
+              uri: ${CART_SERVICE_URI}
+              predicates:
+                - Path=/cart/v3/api-docs
+              filters:
+                - StripPrefix=1
+            - id: order-api-docs
+              uri: ${ORDER_SERVICE_URI}
+              predicates:
+                - Path=/order/v3/api-docs
+              filters:
+                - StripPrefix=1
+            - id: payment-api-docs
+              uri: ${PAYMENT_SERVICE_URI}
+              predicates:
+                - Path=/payment/v3/api-docs
+              filters:
+                - StripPrefix=1
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: Auth Service
+        url: /auth/v3/api-docs
+      - name: Product Service
+        url: /product/v3/api-docs
+      - name: Inventory Service
+        url: /inventory/v3/api-docs
+      - name: Cart Service
+        url: /cart/v3/api-docs
+      - name: Order Service
+        url: /order/v3/api-docs
+      - name: Payment Service
+        url: /payment/v3/api-docs
+
+logging:
+  level:
+    root: INFO
+    com.ecommerce.gateway: INFO
+    org.springframework.cloud.gateway: INFO
+    org.springframework.security: INFO

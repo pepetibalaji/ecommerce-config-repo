@@ -1,0 +1,16 @@
+message: Cart Service PROD Environment
+
+server:
+  port: ${SERVER_PORT:8085}
+  shutdown: graceful
+
+spring:
+  application.name: cart-service
+  data.redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT:6379}
+    username: ${REDIS_USERNAME:}
+    password: ${REDIS_PASSWORD}
+    ssl.enabled: ${REDIS_SSL_ENABLED:true}
+
+cart.ttl.days: ${CART_TTL_DAYS:7}
