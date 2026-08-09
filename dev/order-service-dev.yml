@@ -33,6 +33,18 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
 
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.ecommerce.common.events.*
+        spring.json.use.type.headers: true
+
+    listener:
+      ack-mode: record
+      observation-enabled: true
+
     template:
       observation-enabled: true
 
@@ -76,3 +88,4 @@ logging:
 
 order:
   default-currency: ${ORDER_DEFAULT_CURRENCY:INR}
+  payment-outcome-consumer-group: ${ORDER_PAYMENT_OUTCOME_CONSUMER_GROUP:order-service-payment-outcomes}
