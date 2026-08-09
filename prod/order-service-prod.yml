@@ -22,6 +22,16 @@ spring:
     baseline-on-migrate: true
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.ecommerce.common.events.*
+        spring.json.use.type.headers: true
+    listener:
+      ack-mode: record
+      observation-enabled: true
     template.observation-enabled: true
     producer:
       client-id: ${ORDER_KAFKA_PRODUCER_CLIENT_ID:order-service-producer}
@@ -41,4 +51,6 @@ grpc:
     deadline-ms: ${INVENTORY_GRPC_DEADLINE_MS:8000}
     plaintext: ${INVENTORY_GRPC_PLAINTEXT:false}
 
-order.default-currency: ${ORDER_DEFAULT_CURRENCY:INR}
+order:
+  default-currency: ${ORDER_DEFAULT_CURRENCY:INR}
+  payment-outcome-consumer-group: ${ORDER_PAYMENT_OUTCOME_CONSUMER_GROUP:order-service-payment-outcomes}
