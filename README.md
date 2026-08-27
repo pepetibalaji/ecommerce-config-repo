@@ -12,14 +12,16 @@ or secret values checked into Git. Configure the values below in the hosting pla
 | Services | Required stage environment variables |
 | --- | --- |
 | All services | `AUTH_ISSUER_URI`, `AUTH_JWK_SET_URI`, `KAFKA_BOOTSTRAP_SERVERS`, `OTEL_TRACES_ENDPOINT` (if tracing is enabled) |
-| PostgreSQL services | Service-specific `AUTH_DB_*`, `PRODUCT_DB_*`, `INVENTORY_DB_*`, `ORDER_DB_*`, and `PAYMENT_DB_*` |
+| PostgreSQL services | Service-specific `AUTH_DB_*`, `INVENTORY_DB_*`, `ORDER_DB_*`, and `PAYMENT_DB_*` |
+| Product service | `PRODUCT_MONGODB_URI` and `PRODUCT_MONGODB_DATABASE` |
 | Redis services | `REDIS_HOST`, `REDIS_PASSWORD` (and `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_SSL_ENABLED` if needed) |
 | Gateway | `AUTH_SERVICE_URI`, `PRODUCT_SERVICE_URI`, `INVENTORY_SERVICE_URI`, `CART_SERVICE_URI`, `ORDER_SERVICE_URI`, `PAYMENT_SERVICE_URI` |
 | Order service | `INVENTORY_GRPC_HOST` |
 | Payment service | `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET`, `PAYMENT_CHECKOUT_SUCCESS_URL`, `PAYMENT_CHECKOUT_CANCEL_URL` |
 
-The dev database variable names are service-specific: `AUTH_DB_*`, `PRODUCT_DB_*`,
-`INVENTORY_DB_*`, `ORDER_DB_*`, and `PAYMENT_DB_*`.
+The dev database variable names are service-specific: `AUTH_DB_*`,
+`PRODUCT_MONGODB_URI`, `PRODUCT_MONGODB_DATABASE`, `INVENTORY_DB_*`,
+`ORDER_DB_*`, and `PAYMENT_DB_*`.
 
 Load `stage/.env` for a staging deployment and configure
 `SPRING_PROFILES_ACTIVE=stage`.

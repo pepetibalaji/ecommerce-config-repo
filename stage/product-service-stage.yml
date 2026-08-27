@@ -7,22 +7,10 @@ server:
 spring:
   application:
     name: product-service
-  datasource:
-    url: ${PRODUCT_DB_URL}
-    username: ${PRODUCT_DB_USERNAME}
-    password: ${PRODUCT_DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    open-in-view: false
-    show-sql: false
-    properties:
-      hibernate.jdbc.time_zone: UTC
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-    baseline-on-migrate: true
+  data:
+    mongodb:
+      uri: ${PRODUCT_MONGODB_URI}
+      database: ${PRODUCT_MONGODB_DATABASE:product_db}
 
 logging:
   level:
