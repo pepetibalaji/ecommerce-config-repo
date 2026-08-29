@@ -8,10 +8,6 @@ spring:
   application:
     name: auth-service
 
-auth:
-  clients:
-    notification-service:
-      client-secret: ${NOTIFICATION_SERVICE_CLIENT_SECRET}
   datasource:
     url: ${AUTH_DB_URL}
     username: ${AUTH_DB_USERNAME}
@@ -39,6 +35,9 @@ auth:
 auth:
   token:
     access-ttl-minutes: ${AUTH_ACCESS_TOKEN_TTL_MINUTES:30}
+  clients:
+    notification-service:
+      client-secret: ${NOTIFICATION_SERVICE_CLIENT_SECRET}
 
 logging:
   level:
