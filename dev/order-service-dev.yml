@@ -89,3 +89,6 @@ logging:
 order:
   default-currency: ${ORDER_DEFAULT_CURRENCY:INR}
   payment-outcome-consumer-group: ${ORDER_PAYMENT_OUTCOME_CONSUMER_GROUP:order-service-payment-outcomes}
+
+product-service:
+  base-url: ${PRODUCT_SERVICE_URI:http://localhost:8082}

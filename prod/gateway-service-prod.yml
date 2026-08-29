@@ -31,11 +31,11 @@ spring:
       - id: product-service
         uri: ${PRODUCT_SERVICE_URI}
         predicates:
-          - Path=/api/v1/products/**,/api/v1/admin/products/**
+          - Path=/api/v1/products/**,/api/v1/admin/products/**,/api/v1/seller/products/**
       - id: inventory-service
         uri: ${INVENTORY_SERVICE_URI}
         predicates:
-          - Path=/api/v1/inventory/**,/api/v1/admin/inventory/**
+          - Path=/api/v1/inventory/**,/api/v1/admin/inventory/**,/api/v1/seller/inventory/**
       - id: cart-service
         uri: ${CART_SERVICE_URI}
         predicates:
@@ -43,7 +43,7 @@ spring:
       - id: order-service
         uri: ${ORDER_SERVICE_URI}
         predicates:
-          - Path=/api/v1/orders/**,/api/v1/admin/orders/**
+          - Path=/api/v1/orders/**,/api/v1/admin/orders/**,/api/v1/seller/orders/**
       - id: payment-service
         uri: ${PAYMENT_SERVICE_URI}
         predicates:

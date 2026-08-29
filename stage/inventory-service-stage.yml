@@ -28,6 +28,9 @@ grpc:
   server:
     port: ${INVENTORY_GRPC_PORT:9091}
 
+product-service:
+  base-url: ${PRODUCT_SERVICE_URI}
+
 logging:
   level:
     root: INFO

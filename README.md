@@ -16,7 +16,8 @@ or secret values checked into Git. Configure the values below in the hosting pla
 | Product service | `PRODUCT_MONGODB_URI` and `PRODUCT_MONGODB_DATABASE` |
 | Redis services | `REDIS_HOST`, `REDIS_PASSWORD` (and `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_SSL_ENABLED` if needed) |
 | Gateway | `AUTH_SERVICE_URI`, `PRODUCT_SERVICE_URI`, `INVENTORY_SERVICE_URI`, `CART_SERVICE_URI`, `ORDER_SERVICE_URI`, `PAYMENT_SERVICE_URI` |
-| Order service | `INVENTORY_GRPC_HOST` |
+| Order service | `INVENTORY_GRPC_HOST`, `PRODUCT_SERVICE_URI` |
+| Inventory service | `PRODUCT_SERVICE_URI` |
 | Payment service | `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET`, `PAYMENT_CHECKOUT_SUCCESS_URL`, `PAYMENT_CHECKOUT_CANCEL_URL` |
 
 The dev database variable names are service-specific: `AUTH_DB_*`,
