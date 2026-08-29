@@ -48,3 +48,7 @@ spring:
         uri: ${PAYMENT_SERVICE_URI}
         predicates:
           - Path=/api/v1/payments/**,/api/v1/admin/payments/**
+      - id: notification-service
+        uri: ${NOTIFICATION_SERVICE_URI}
+        predicates:
+          - Path=/api/v1/notifications/**

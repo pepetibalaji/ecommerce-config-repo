@@ -1,0 +1,49 @@
+message: Notification Service STAGE Environment
+
+server:
+  port: ${NOTIFICATION_SERVICE_PORT:8088}
+  shutdown: graceful
+
+spring:
+  application:
+    name: notification-service
+  datasource:
+    url: ${NOTIFICATION_DB_URL}
+    username: ${NOTIFICATION_DB_USERNAME}
+    password: ${NOTIFICATION_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa.hibernate.ddl-auto: validate
+  jpa.open-in-view: false
+  jpa.properties.hibernate.jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    listener.observation-enabled: true
+    listener.ack-mode: record
+    consumer:
+      group-id: ${NOTIFICATION_KAFKA_CONSUMER_GROUP_ID:notification-service}
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+notification:
+  kafka.consumer-group: ${NOTIFICATION_KAFKA_CONSUMER_GROUP_ID:notification-service}
+  max-attempts: ${NOTIFICATION_MAX_ATTEMPTS:5}
+  retry-base-delay: ${NOTIFICATION_RETRY_BASE_DELAY:30s}
+  delivery-poll-ms: ${NOTIFICATION_DELIVERY_POLL_MS:5000}
+  provider: ${NOTIFICATION_EMAIL_PROVIDER}
+  mailtrap:
+    api-token: ${MAILTRAP_API_TOKEN}
+    from-email: ${MAILTRAP_FROM_EMAIL}
+    from-name: ${MAILTRAP_FROM_NAME:Ecommerce Platform}
+  recipient-email-overrides: {}
+  auth:
+    base-url: ${AUTH_SERVICE_URI}
+    client-id: notification-service
+    client-secret: ${NOTIFICATION_SERVICE_CLIENT_SECRET}
+
+management.endpoints.web.exposure.include: health,info,prometheus
