@@ -24,6 +24,10 @@ The dev database variable names are service-specific: `AUTH_DB_*`,
 `PRODUCT_MONGODB_URI`, `PRODUCT_MONGODB_DATABASE`, `INVENTORY_DB_*`,
 `ORDER_DB_*`, and `PAYMENT_DB_*`.
 
+Cart Service defaults customer-cart expiry to seven days and guest-cart expiry
+to 30 days. Override them per environment with `CART_CUSTOMER_TTL` and
+`CART_GUEST_TTL` respectively (for example, `14d` or `12h`).
+
 Load `stage/.env` for a staging deployment and configure
 `SPRING_PROFILES_ACTIVE=stage`.
 

@@ -13,4 +13,8 @@ spring:
     password: ${REDIS_PASSWORD}
     ssl.enabled: ${REDIS_SSL_ENABLED:true}
 
-cart.ttl.days: ${CART_TTL_DAYS:7}
+cart:
+  customer:
+    ttl: ${CART_CUSTOMER_TTL:7d}
+  guest:
+    ttl: ${CART_GUEST_TTL:30d}
