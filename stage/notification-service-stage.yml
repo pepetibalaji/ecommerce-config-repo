@@ -7,6 +7,11 @@ server:
 spring:
   application:
     name: notification-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTH_ISSUER_URI}
   datasource:
     url: ${NOTIFICATION_DB_URL}
     username: ${NOTIFICATION_DB_USERNAME}
@@ -31,6 +36,12 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 notification:
+  auth-action-delivery:
+    auth-base-url: ${AUTH_INTERNAL_BASE_URL}
+    internal-service-token: ${AUTH_INTERNAL_SERVICE_TOKEN}
+    verification-url: ${AUTH_EMAIL_VERIFICATION_URL}
+    password-reset-url: ${AUTH_PASSWORD_RESET_URL}
+    email-change-url: ${AUTH_EMAIL_CHANGE_URL}
   kafka.consumer-group: ${NOTIFICATION_KAFKA_CONSUMER_GROUP_ID:notification-service}
   max-attempts: ${NOTIFICATION_MAX_ATTEMPTS:5}
   retry-base-delay: ${NOTIFICATION_RETRY_BASE_DELAY:30s}
@@ -41,9 +52,5 @@ notification:
     from-email: ${MAILTRAP_FROM_EMAIL}
     from-name: ${MAILTRAP_FROM_NAME:Ecommerce Platform}
   recipient-email-overrides: {}
-  auth:
-    base-url: ${AUTH_SERVICE_URI}
-    client-id: notification-service
-    client-secret: ${NOTIFICATION_SERVICE_CLIENT_SECRET}
 
 management.endpoints.web.exposure.include: health,info,prometheus

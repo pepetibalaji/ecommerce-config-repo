@@ -8,6 +8,15 @@ spring:
   application:
     name: auth-service
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
+
   datasource:
     url: ${AUTH_DB_URL}
     username: ${AUTH_DB_USERNAME}
@@ -36,11 +45,22 @@ spring:
       port: ${REDIS_PORT:6379}
 
 auth:
+  authorization-server:
+    issuer: ${AUTH_ISSUER_URI:http://localhost:8081}
+  internal:
+    service-token: ${AUTH_INTERNAL_SERVICE_TOKEN:}
+  action-token:
+    signing-secret: ${AUTH_ACTION_TOKEN_SIGNING_SECRET:}
+  signing-key:
+    source: GENERATED
+    key-id: auth-dev-ephemeral
+    allow-ephemeral: true
+  oauth:
+    clients: []
+  outbox:
+    poll-delay-ms: ${AUTH_OUTBOX_POLL_DELAY_MS:1000}
   token:
     access-ttl-minutes: ${AUTH_ACCESS_TOKEN_TTL_MINUTES:30}
-  clients:
-    notification-service:
-      client-secret: ${NOTIFICATION_SERVICE_CLIENT_SECRET}
 
 logging:
   level:
