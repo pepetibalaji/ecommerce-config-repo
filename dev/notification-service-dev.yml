@@ -72,6 +72,6 @@ management:
 logging:
   level:
     root: INFO
-    com.ecommerce.notification: INFO
+    com.ecommerce.notification: DEBUG
     org.springframework.kafka: WARN
     org.apache.kafka: WARN
