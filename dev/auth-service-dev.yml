@@ -63,7 +63,7 @@ auth:
   outbox:
     poll-delay-ms: ${AUTH_OUTBOX_POLL_DELAY_MS:1000}
   token:
-    access-ttl-minutes: ${AUTH_ACCESS_TOKEN_TTL_MINUTES:30}
+    access-ttl-minutes: ${AUTH_ACCESS_TOKEN_TTL_MINUTES:60}
 
 logging:
   level:
