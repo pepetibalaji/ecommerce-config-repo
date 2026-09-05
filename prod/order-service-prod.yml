@@ -31,8 +31,6 @@ spring:
         spring.json.use.type.headers: true
     listener:
       ack-mode: record
-      observation-enabled: true
-    template.observation-enabled: true
     producer:
       client-id: ${ORDER_KAFKA_PRODUCER_CLIENT_ID:order-service-producer}
       acks: all

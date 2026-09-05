@@ -26,7 +26,6 @@ spring:
     baseline-on-migrate: true
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
-    listener.observation-enabled: true
     listener.ack-mode: record
     consumer:
       group-id: ${NOTIFICATION_KAFKA_CONSUMER_GROUP_ID:notification-service}

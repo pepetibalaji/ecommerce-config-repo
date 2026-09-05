@@ -45,6 +45,9 @@ spring:
       port: ${REDIS_PORT:6379}
 
 auth:
+  bootstrap-admin:
+    email: ${AUTH_BOOTSTRAP_ADMIN_EMAIL:}
+    password: ${AUTH_BOOTSTRAP_ADMIN_PASSWORD:}
   authorization-server:
     issuer: ${AUTH_ISSUER_URI:http://localhost:8081}
   internal:
