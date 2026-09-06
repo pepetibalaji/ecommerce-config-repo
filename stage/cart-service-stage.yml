@@ -20,6 +20,10 @@ cart:
     ttl: ${CART_CUSTOMER_TTL:7d}
   guest:
     ttl: ${CART_GUEST_TTL:30d}
+    cookie:
+      name: ${CART_GUEST_COOKIE_NAME:guestId}
+      same-site: ${CART_GUEST_COOKIE_SAME_SITE:Lax}
+      secure: ${CART_GUEST_COOKIE_SECURE:true}
 
 logging:
   level:
