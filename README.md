@@ -37,6 +37,27 @@ Production configuration is in `prod/application-prod.yml` and the service-speci
 `prod/*-service-prod.yml` files. Load `prod/.env` only through a secure deployment
 mechanism, then move its values into the cloud secret manager before production use.
 
+## Auth signing-key operations
+
+Stage and production must set `AUTH_ISSUER_URI` to the permanent public HTTPS URL for that
+environment (for example `https://auth.staging.example.com` and `https://auth.example.com`).
+Never use a pod address, load-balancer-internal address, or localhost. Resource services must use
+the matching `AUTH_JWK_SET_URI` from the same issuer.
+
+Store `AUTH_SIGNING_KEYSTORE_LOCATION`, `AUTH_SIGNING_KEYSTORE_PASSWORD`,
+`AUTH_SIGNING_KEY_PASSWORD`, `AUTH_SIGNING_KEY_ALIAS`, and `AUTH_SIGNING_KEY_ID` in OCI Vault
+(or an equivalent workload-identity-protected secret store). Mount or expose them only to the Auth
+Service workload; do not add the PKCS12 file or any password to this repository, logs, traces, or
+diagnostics.
+
+To rotate, provision a new RSA key and deploy it as the active `auth.signing-key` values while
+placing the retired key under `auth.signing-key.previous-keys`. The JWKS then publishes both public
+keys, while only the active key can sign. Retain the retired key for at least the maximum access
+token lifetime plus JWKS cache lifetime, then remove it in a later deployment. For emergency
+revocation, remove the compromised key from both active/previous configuration, deploy immediately,
+invalidate affected sessions by incrementing token versions/revoking refresh sessions, and notify
+resource-service operators to flush JWKS caches.
+
 ## Repository layout
 
 Each environment owns its configuration files and local environment file:
