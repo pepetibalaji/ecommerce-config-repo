@@ -33,6 +33,13 @@ spring:
               uri: ${AUTH_SERVICE_URI}
               predicates:
                 - Path=/api/v1/auth/**,/api/v1/users/**,/api/v1/admin/users/**,/oauth2/**,/.well-known/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@ipKeyResolver}"
+                    redis-rate-limiter.replenishRate: ${GATEWAY_AUTH_RATE_LIMIT_PER_SECOND:5}
+                    redis-rate-limiter.burstCapacity: ${GATEWAY_AUTH_RATE_LIMIT_BURST:10}
+                    redis-rate-limiter.requestedTokens: 1
             - id: product-service
               uri: ${PRODUCT_SERVICE_URI}
               predicates:
