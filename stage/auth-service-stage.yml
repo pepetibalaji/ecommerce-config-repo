@@ -76,6 +76,9 @@ auth:
         reuse-refresh-tokens: false
   outbox:
     poll-delay-ms: ${AUTH_OUTBOX_POLL_DELAY_MS:1000}
+    max-attempts: ${AUTH_OUTBOX_MAX_ATTEMPTS:10}
+    lease-duration: ${AUTH_OUTBOX_LEASE_DURATION:PT1M}
+    retry-base-delay: ${AUTH_OUTBOX_RETRY_BASE_DELAY:PT5S}
   token:
     access-ttl-minutes: ${AUTH_ACCESS_TOKEN_TTL_MINUTES:30}
 

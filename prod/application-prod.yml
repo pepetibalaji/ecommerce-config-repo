@@ -28,6 +28,13 @@ logging:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [${spring.application.name}] [traceId=%X{traceId}, spanId=%X{spanId}, correlationId=%X{correlationId}] %logger{36} - %msg%n"
 
 spring:
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+      username: ${REDIS_USERNAME:}
+      password: ${REDIS_PASSWORD}
+      ssl.enabled: ${REDIS_SSL_ENABLED:true}
   jackson:
     time-zone: UTC
     serialization:
