@@ -10,3 +10,12 @@ spring:
     mongodb:
       uri: ${PRODUCT_MONGODB_URI}
       database: ${PRODUCT_MONGODB_DATABASE:product_db}
+
+auth:
+  internal:
+    base-url: ${AUTH_SERVICE_INTERNAL_URL}
+    service-token: ${AUTH_INTERNAL_SERVICE_TOKEN:}
+
+product:
+  outbox:
+    poll-delay-ms: ${PRODUCT_OUTBOX_POLL_DELAY_MS:1000}
