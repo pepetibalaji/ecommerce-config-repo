@@ -45,6 +45,15 @@ spring:
       port: ${REDIS_PORT:6379}
 
 auth:
+  browser-session:
+    idle-timeout: ${AUTH_BROWSER_IDLE_TIMEOUT:PT30M}
+    absolute-timeout: ${AUTH_BROWSER_ABSOLUTE_TIMEOUT:PT168H}
+    refresh-cookie:
+      name: ${AUTH_REFRESH_COOKIE_NAME:pepekart_refresh}
+      path: ${AUTH_REFRESH_COOKIE_PATH:/api/v1/auth}
+      same-site: ${AUTH_REFRESH_COOKIE_SAME_SITE:Lax}
+      secure: ${AUTH_REFRESH_COOKIE_SECURE:false}
+      max-age: ${AUTH_REFRESH_COOKIE_MAX_AGE:PT168H}
   bootstrap-admin:
     email: ${AUTH_BOOTSTRAP_ADMIN_EMAIL:}
     password: ${AUTH_BOOTSTRAP_ADMIN_PASSWORD:}
