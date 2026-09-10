@@ -39,6 +39,15 @@ spring:
     ssl.enabled: ${REDIS_SSL_ENABLED:true}
 
 auth:
+  browser-session:
+    idle-timeout: ${AUTH_BROWSER_IDLE_TIMEOUT:PT30M}
+    absolute-timeout: ${AUTH_BROWSER_ABSOLUTE_TIMEOUT:PT168H}
+    refresh-cookie:
+      name: ${AUTH_REFRESH_COOKIE_NAME:__Secure-pepekart-refresh}
+      path: ${AUTH_REFRESH_COOKIE_PATH:/api/v1/auth}
+      same-site: ${AUTH_REFRESH_COOKIE_SAME_SITE:Lax}
+      secure: ${AUTH_REFRESH_COOKIE_SECURE:true}
+      max-age: ${AUTH_REFRESH_COOKIE_MAX_AGE:PT168H}
   authorization-server:
     issuer: ${AUTH_ISSUER_URI}
   internal:
