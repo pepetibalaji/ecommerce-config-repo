@@ -16,12 +16,19 @@ auth:
   internal:
     base-url: ${AUTH_SERVICE_INTERNAL_URL}
     service-token: ${AUTH_INTERNAL_SERVICE_TOKEN:}
+    connect-timeout: ${AUTH_INTERNAL_CONNECT_TIMEOUT:PT2S}
+    read-timeout: ${AUTH_INTERNAL_READ_TIMEOUT:PT3S}
 
 product:
   images:
     allowed-hosts: ${PRODUCT_IMAGE_ALLOWED_HOSTS}
   outbox:
     poll-delay-ms: ${PRODUCT_OUTBOX_POLL_DELAY_MS:1000}
+    batch-size: ${PRODUCT_OUTBOX_BATCH_SIZE:100}
+    max-attempts: ${PRODUCT_OUTBOX_MAX_ATTEMPTS:10}
+    retry-delay-seconds: ${PRODUCT_OUTBOX_RETRY_DELAY_SECONDS:5}
+  catalogue:
+    query-timeout-ms: ${PRODUCT_QUERY_TIMEOUT_MS:2000}
 
 logging:
   level:
