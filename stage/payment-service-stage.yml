@@ -75,6 +75,7 @@ payment:
       webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}
       timeout-ms: ${RAZORPAY_TIMEOUT_MS:5000}
   checkout:
+    frontend-return-url: "${PAYMENT_FRONTEND_RETURN_URL}"
     success-url: "${PAYMENT_CHECKOUT_SUCCESS_URL}"
     cancel-url: "${PAYMENT_CHECKOUT_CANCEL_URL}"
   idempotency:
