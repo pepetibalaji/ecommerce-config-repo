@@ -90,8 +90,9 @@ payment:
       timeout-ms: ${RAZORPAY_TIMEOUT_MS:5000}
 
   checkout:
-    success-url: "${PAYMENT_CHECKOUT_SUCCESS_URL:http://localhost:8087/public/payments/success?orderId={ORDER_ID}&paymentId={PAYMENT_ID}}"
-    cancel-url: "${PAYMENT_CHECKOUT_CANCEL_URL:http://localhost:8087/public/payments/cancel?orderId={ORDER_ID}&paymentId={PAYMENT_ID}}"
+    success-url: "${PAYMENT_CHECKOUT_SUCCESS_URL:http://localhost:5173/payment/return?orderId={ORDER_ID}&paymentId={PAYMENT_ID}}"
+    cancel-url: "${PAYMENT_CHECKOUT_CANCEL_URL:http://localhost:5173/payment/return?orderId={ORDER_ID}&paymentId={PAYMENT_ID}}"
+    frontend-return-url: "${PAYMENT_FRONTEND_RETURN_URL:http://localhost:5173/payment/return}"
 
   idempotency:
     key-prefix: ${PAYMENT_IDEMPOTENCY_KEY_PREFIX:payment}
