@@ -19,7 +19,7 @@ spring:
       - id: product-service-bulk-create
         uri: ${PRODUCT_SERVICE_URI}
         predicates:
-                - Path=/api/v1/seller/products/bulk
+          - Path=/api/v1/seller/products/bulk
           - Method=POST
         metadata:
           connect-timeout: 1000
@@ -27,7 +27,7 @@ spring:
       - id: auth-service
         uri: ${AUTH_SERVICE_URI}
         predicates:
-                - Path=/api/v1/auth/**,/api/v1/users/**,/api/v1/admin/users/**,/api/v1/admin/outbox/**,/oauth2/**,/.well-known/**
+          - Path=/api/v1/auth/**,/api/v1/users/**,/api/v1/admin/users/**,/api/v1/admin/outbox/**,/oauth2/**,/.well-known/**
         filters:
           - name: RequestRateLimiter
             args:
@@ -47,6 +47,30 @@ spring:
         uri: ${CART_SERVICE_URI}
         predicates:
           - Path=/api/v1/cart/**
+      - id: order-checkout
+        uri: ${ORDER_SERVICE_URI}
+        predicates:
+          - Path=/api/v1/orders
+          - Method=POST
+        filters:
+          - name: RequestRateLimiter
+            args:
+              key-resolver: "#{@ipKeyResolver}"
+              redis-rate-limiter.replenishRate: ${GATEWAY_ORDER_CHECKOUT_RATE_LIMIT_PER_SECOND:2}
+              redis-rate-limiter.burstCapacity: ${GATEWAY_ORDER_CHECKOUT_RATE_LIMIT_BURST:5}
+              redis-rate-limiter.requestedTokens: 1
+      - id: order-cancellation
+        uri: ${ORDER_SERVICE_URI}
+        predicates:
+          - Path=/api/v1/orders/*/cancel
+          - Method=PUT
+        filters:
+          - name: RequestRateLimiter
+            args:
+              key-resolver: "#{@ipKeyResolver}"
+              redis-rate-limiter.replenishRate: ${GATEWAY_ORDER_CANCEL_RATE_LIMIT_PER_SECOND:2}
+              redis-rate-limiter.burstCapacity: ${GATEWAY_ORDER_CANCEL_RATE_LIMIT_BURST:5}
+              redis-rate-limiter.requestedTokens: 1
       - id: order-service
         uri: ${ORDER_SERVICE_URI}
         predicates:

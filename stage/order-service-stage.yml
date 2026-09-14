@@ -62,8 +62,21 @@ grpc:
       plaintext: ${INVENTORY_GRPC_PLAINTEXT:false}
 
 order:
+  payment-lookup:
+    secret: ${PAYMENT_ORDER_LOOKUP_SECRET}
   default-currency: ${ORDER_DEFAULT_CURRENCY:INR}
   payment-outcome-consumer-group: ${ORDER_PAYMENT_OUTCOME_CONSUMER_GROUP:order-service-payment-outcomes}
+  checkout:
+    pending-payment-expiry: ${ORDER_PENDING_PAYMENT_EXPIRY:15m}
+    idempotency-retention: ${ORDER_IDEMPOTENCY_RETENTION:24h}
+  order-created-outbox:
+    batch-size: ${ORDER_CREATED_OUTBOX_BATCH_SIZE:25}
+    max-attempts: ${ORDER_CREATED_OUTBOX_MAX_ATTEMPTS:8}
+  payment-expiry:
+    batch-size: ${ORDER_PAYMENT_EXPIRY_BATCH_SIZE:25}
+  checkout-compensation:
+    batch-size: ${ORDER_CHECKOUT_COMPENSATION_BATCH_SIZE:25}
+    max-attempts: ${ORDER_CHECKOUT_COMPENSATION_MAX_ATTEMPTS:8}
 
 product-service:
   base-url: ${PRODUCT_SERVICE_URI}

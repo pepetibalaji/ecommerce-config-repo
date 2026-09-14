@@ -5,6 +5,10 @@ server:
   shutdown: graceful
 
 spring:
+  task:
+    scheduling:
+      pool:
+        size: 4
   application.name: payment-service
   datasource:
     url: ${PAYMENT_DB_URL}
@@ -26,8 +30,9 @@ spring:
       group-id: ${PAYMENT_KAFKA_CONSUMER_GROUP_ID:payment-service}
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
         spring.json.trusted.packages: com.ecommerce.common.events.*
         spring.json.value.default.type: com.ecommerce.common.events.order.OrderCreatedEvent
         spring.json.use.type.headers: false
@@ -50,20 +55,49 @@ payment:
     active: ${PAYMENT_PROVIDER_ACTIVE:STRIPE}
     mode: ${PAYMENT_PROVIDER_MODE:live}
     refund-timeout-ms: ${PAYMENT_PROVIDER_REFUND_TIMEOUT_MS:5000}
-    sandbox.enabled: ${PAYMENT_SANDBOX_ENABLED:false}
+    sandbox.enabled: false
     stripe:
       enabled: ${STRIPE_ENABLED:true}
       api-key: ${STRIPE_API_KEY}
       webhook-secret: ${STRIPE_WEBHOOK_SECRET}
+      previous-webhook-secrets: ${STRIPE_PREVIOUS_WEBHOOK_SECRETS:}
+      staging-verified: ${STRIPE_STAGING_VERIFIED:false}
       timeout-ms: ${STRIPE_TIMEOUT_MS:5000}
     razorpay:
-      enabled: ${RAZORPAY_ENABLED:false}
+      enabled: false
       key-id: ${RAZORPAY_KEY_ID:}
       key-secret: ${RAZORPAY_KEY_SECRET:}
       webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}
       timeout-ms: ${RAZORPAY_TIMEOUT_MS:5000}
   checkout:
+    frontend-origins: ${PAYMENT_FRONTEND_ORIGINS}
+    allowed-provider-hosts: [checkout.stripe.com]
     frontend-return-url: "${PAYMENT_FRONTEND_RETURN_URL}"
     success-url: ${PAYMENT_CHECKOUT_SUCCESS_URL}
     cancel-url: ${PAYMENT_CHECKOUT_CANCEL_URL}
+  order-lookup:
+    base-url: ${ORDER_SERVICE_URI}
+    secret: ${PAYMENT_ORDER_LOOKUP_SECRET}
+  outbox:
+    poll-delay-ms: ${PAYMENT_OUTBOX_POLL_DELAY_MS:1000}
+    batch-size: ${PAYMENT_OUTBOX_BATCH_SIZE:25}
+    max-attempts: ${PAYMENT_OUTBOX_MAX_ATTEMPTS:12}
+    send-timeout-seconds: ${PAYMENT_OUTBOX_SEND_TIMEOUT_SECONDS:10}
+  expiry:
+    poll-delay-ms: ${PAYMENT_EXPIRY_POLL_DELAY_MS:15000}
+  reconciliation:
+    poll-delay-ms: ${PAYMENT_RECONCILIATION_POLL_DELAY_MS:60000}
+  webhook:
+    max-body-bytes: ${PAYMENT_WEBHOOK_MAX_BODY_BYTES:262144}
+    stripe-requests-per-minute: ${PAYMENT_WEBHOOK_STRIPE_REQUESTS_PER_MINUTE:600}
+    max-attempts: ${PAYMENT_WEBHOOK_MAX_ATTEMPTS:12}
+    retry-delay-ms: ${PAYMENT_WEBHOOK_RETRY_DELAY_MS:5000}
+  refunds:
+    lease-seconds: ${PAYMENT_REFUND_LEASE_SECONDS:120}
+    max-attempts: ${PAYMENT_REFUND_MAX_ATTEMPTS:10}
+    retry-base-seconds: ${PAYMENT_REFUND_RETRY_BASE_SECONDS:30}
+    batch-size: ${PAYMENT_REFUND_BATCH_SIZE:20}
+    poll-delay-ms: ${PAYMENT_REFUND_POLL_DELAY_MS:5000}
+  cancellations:
+    poll-delay-ms: ${PAYMENT_CANCELLATION_POLL_DELAY_MS:5000}
   idempotency.key-prefix: ${PAYMENT_IDEMPOTENCY_KEY_PREFIX:payment}

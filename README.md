@@ -11,14 +11,14 @@ or secret values checked into Git. Configure the values below in the hosting pla
 
 | Services | Required stage environment variables |
 | --- | --- |
-| All services | `AUTH_ISSUER_URI`, `AUTH_JWK_SET_URI`, `KAFKA_BOOTSTRAP_SERVERS`, `OTEL_TRACES_ENDPOINT` (if tracing is enabled) |
+| All services | `AUTH_ISSUER_URI`, `AUTH_JWK_SET_URI`, `KAFKA_BOOTSTRAP_SERVERS`, `KAFKA_SASL_MECHANISM`, `KAFKA_SASL_JAAS_CONFIG`, `OTEL_TRACES_ENDPOINT` (if tracing is enabled) |
 | PostgreSQL services | Service-specific `AUTH_DB_*`, `INVENTORY_DB_*`, `ORDER_DB_*`, `PAYMENT_DB_*`, and `NOTIFICATION_DB_*` |
 | Product service | `PRODUCT_MONGODB_URI` and `PRODUCT_MONGODB_DATABASE` |
 | Redis services | `REDIS_HOST`, `REDIS_PASSWORD` (and `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_SSL_ENABLED` if needed) |
 | Gateway | `AUTH_SERVICE_URI`, `PRODUCT_SERVICE_URI`, `INVENTORY_SERVICE_URI`, `CART_SERVICE_URI`, `ORDER_SERVICE_URI`, `PAYMENT_SERVICE_URI`, `NOTIFICATION_SERVICE_URI` |
-| Order service | `INVENTORY_GRPC_HOST`, `PRODUCT_SERVICE_URI` |
+| Order service | `INVENTORY_GRPC_HOST`, `PRODUCT_SERVICE_URI`, `PAYMENT_ORDER_LOOKUP_SECRET` |
 | Inventory service | `PRODUCT_SERVICE_URI` |
-| Payment service | `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET`, `PAYMENT_CHECKOUT_SUCCESS_URL`, `PAYMENT_CHECKOUT_CANCEL_URL` |
+| Payment service | `ORDER_SERVICE_URI`, `PAYMENT_ORDER_LOOKUP_SECRET`, `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_STAGING_VERIFIED`, `PAYMENT_FRONTEND_ORIGINS`, `PAYMENT_FRONTEND_RETURN_URL`, `PAYMENT_CHECKOUT_SUCCESS_URL`, `PAYMENT_CHECKOUT_CANCEL_URL` |
 | Notification service | Dev Sandbox: `NOTIFICATION_EMAIL_PROVIDER=mailtrap-sandbox`, `MAILTRAP_SMTP_HOST`, `MAILTRAP_SMTP_PORT`, `MAILTRAP_SMTP_USERNAME`, `MAILTRAP_SMTP_PASSWORD`. Stage transactional API: `NOTIFICATION_EMAIL_PROVIDER=mailtrap`, `MAILTRAP_API_TOKEN`, and `MAILTRAP_FROM_EMAIL` |
 | Notification-to-Auth internal lookup | `NOTIFICATION_SERVICE_CLIENT_SECRET` shared by Auth Service and Notification Service; store it as a deployment secret. |
 
@@ -66,3 +66,22 @@ Each environment owns its configuration files and local environment file:
 - `stage/`
 - `prod/`
 Centralized environment configuration repository for Spring Cloud Config.
+
+## Payment reliability configuration
+
+Order and Payment must receive the same secret-injected `PAYMENT_ORDER_LOOKUP_SECRET`
+(at least 32 nonblank characters). Deployed Payment uses `ORDER_SERVICE_URI` for the
+private signed Order lookup. Set exact HTTPS frontend origins and return URL templates
+with both `{ORDER_ID}` and `{PAYMENT_ID}` placeholders. Never place backend secrets in
+frontend `VITE_*` variables.
+
+Stage/prod shared Kafka settings require `SASL_SSL`, separate service principals and
+topic ACLs; coordinate their rollout across services. Stripe enablement requires the
+real staging exercise before `STRIPE_STAGING_VERIFIED=true`. Razorpay remains disabled,
+and Sandbox is limited to development/test profiles. Review Payment V4-V6 and Order V15
+before deployment; see `payment-service/docs/production-reliability.md` in the application repository.
+
+The configuration CI workflow parses environment YAML with duplicate-key rejection and
+checks required Payment/Order lookup, scheduler, worker, provider and Kafka settings.
+It validates configuration structure and placeholders without loading `.env` files or
+asserting that deployed credentials or a live Stripe account have been verified.
