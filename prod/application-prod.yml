@@ -46,6 +46,10 @@ spring:
           issuer-uri: ${AUTH_ISSUER_URI}
           jwk-set-uri: ${AUTH_JWK_SET_URI}
   kafka:
+    properties:
+      security.protocol: SASL_SSL
+      sasl.mechanism: ${KAFKA_SASL_MECHANISM:SCRAM-SHA-512}
+      sasl.jaas.config: ${KAFKA_SASL_JAAS_CONFIG}
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     listener:
       observation-enabled: true

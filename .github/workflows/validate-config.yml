@@ -1,0 +1,42 @@
+name: Validate configuration
+
+on:
+  push:
+    paths:
+      - 'dev/**'
+      - 'stage/**'
+      - 'prod/**'
+      - 'scripts/ValidatePaymentConfiguration.java'
+      - '.github/workflows/validate-config.yml'
+  pull_request:
+    paths:
+      - 'dev/**'
+      - 'stage/**'
+      - 'prod/**'
+      - 'scripts/ValidatePaymentConfiguration.java'
+      - '.github/workflows/validate-config.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Download pinned YAML parser
+        run: >-
+          mvn --batch-mode --no-transfer-progress
+          org.apache.maven.plugins:maven-dependency-plugin:3.8.1:get
+          -Dartifact=org.yaml:snakeyaml:2.4
+          -Dtransitive=false
+      - name: Validate YAML and payment integration settings
+        run: >-
+          java --class-path "$HOME/.m2/repository/org/yaml/snakeyaml/2.4/snakeyaml-2.4.jar"
+          scripts/ValidatePaymentConfiguration.java .
