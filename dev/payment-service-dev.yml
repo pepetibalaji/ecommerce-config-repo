@@ -70,7 +70,7 @@ spring:
 grpc:
   server:
     enabled: true
-    port: ${PAYMENT_GRPC_PORT:9092}
+    port: ${PAYMENT_GRPC_PORT:9094}
 
 payment:
   provider:
