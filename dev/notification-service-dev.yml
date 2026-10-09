@@ -37,13 +37,13 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   mail:
-    host: ${MAILTRAP_SMTP_HOST}
-    port: ${MAILTRAP_SMTP_PORT:2525}
-    username: ${MAILTRAP_SMTP_USERNAME}
-    password: ${MAILTRAP_SMTP_PASSWORD}
+    host: ${NOTIFICATION_SMTP_HOST:localhost}
+    port: ${NOTIFICATION_SMTP_PORT:1025}
+    username: ${NOTIFICATION_SMTP_USERNAME:}
+    password: ${NOTIFICATION_SMTP_PASSWORD:}
     properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
+      mail.smtp.auth: ${NOTIFICATION_SMTP_AUTH:false}
+      mail.smtp.starttls.enable: ${NOTIFICATION_SMTP_STARTTLS:false}
 
 notification:
   auth-action-delivery:
@@ -57,7 +57,7 @@ notification:
   max-attempts: ${NOTIFICATION_MAX_ATTEMPTS:5}
   retry-base-delay: ${NOTIFICATION_RETRY_BASE_DELAY:30s}
   delivery-poll-ms: ${NOTIFICATION_DELIVERY_POLL_MS:5000}
-  provider: ${NOTIFICATION_EMAIL_PROVIDER:mailtrap-sandbox}
+  provider: ${NOTIFICATION_EMAIL_PROVIDER:smtp}
   sandbox-from-email: ${MAILTRAP_SANDBOX_FROM_EMAIL:sandbox@ecommerce.local}
   mailtrap:
     api-token: ${MAILTRAP_API_TOKEN:}
